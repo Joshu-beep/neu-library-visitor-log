@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Era University Library</title>
+    <link rel="icon" type="image/x-icon" href="neulogo.png" />
+
+    <style>
+      :root {
+        --primary-blue: #001f54; /* Dark blue from the header/buttons */
+        --accent-gold: #f59e0b; /* Orange/Gold from the icon/divider */
+        --text-gray: #64748b;
+        --light-border: #cbd5e1;
+        --bg-fallback: #f4f6f9;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        /* * BACKGROUND IMAGE SETUP */
+        background-image: url("backgroundimg.jpg");
+        background-color: var(--bg-fallback);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+
+        /* Changed to stretch and dock to the right */
+        display: flex;
+        justify-content: flex-end;
+        align-items: stretch;
+        min-height: 100vh;
+        padding: 0;
+        overflow: hidden; /* Prevents body scrolling completely */
+      }
+
+      .login-wrapper {
+        width: 100%;
+        max-width: 480px; /* Widened slightly to accommodate larger elements */
+        display: flex;
+        flex-direction: column;
+        background: #ffffff;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15); /* Shadow on left edge */
+        z-index: 10;
+        min-height: 100vh;
+        overflow-y: auto; /* Allows only the panel to scroll gracefully if screen is very short */
+      }
+
+      /* Mobile responsivenes: Panel takes full width */
+      @media (max-width: 800px) {
+        .login-wrapper {
+          max-width: 100%;
+          box-shadow: none;
+        }
+        body {
+          overflow: auto;
+        }
+      }
+
+      .login-card {
+        background: transparent;
+        border-radius: 0;
+        box-shadow: none;
+        width: 100%;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0;
+      }
+
+      .card-header {
+        background-color: var(--primary-blue);
+        color: #ffffff;
+        text-align: center;
+        padding: 30px 20px 25px; /* Restored comfortable padding */
+        border-bottom: 4px solid var(--accent-gold);
+      }
+
+      .icon-container {
+        margin-bottom: 12px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 64px; /* Restored icon size */
+        height: 64px;
+        border: 2px solid var(--accent-gold);
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: var(--primary-blue);
+      }
+
+      .logo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 8px;
+      }
+
+      .card-header h1 {
+        font-size: 22px; /* Increased */
+        font-weight: 700;
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+      }
+
+      .card-header h2 {
+        font-size: 12px; /* Increased */
+        color: var(--accent-gold);
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .card-body {
+        padding: 30px 40px; /* Restored padding */
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .input-group {
+        margin-bottom: 20px; /* Restored spacing */
+      }
+
+      .input-row {
+        display: flex;
+        gap: 15px; /* Increased gap */
+      }
+
+      .input-row .input-group {
+        flex: 1;
+      }
+
+      .input-group label {
+        display: block;
+        text-align: center;
+        font-size: 14px; /* Increased */
+        color: var(--text-gray);
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 12px 16px; /* Increased */
+        border: 1px solid var(--light-border);
+        border-radius: 8px;
+        font-size: 14px; /* Increased */
+        outline: none;
+        transition: border-color 0.2s;
+        text-align: center;
+      }
+
+      .text-left label {
+        text-align: left;
+      }
+
+      .text-left input {
+        text-align: left;
+      }
+
+      .input-group input:focus {
+        border-color: var(--primary-blue);
+      }
+
+      .input-group input::placeholder {
+        color: #94a3b8;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 14px; /* Increased */
+        border-radius: 8px;
+        font-size: 15px; /* Increased */
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        outline: none;
+      }
+
+      .btn:active {
+        transform: scale(0.98);
+      }
+
+      .btn-primary {
+        background-color: var(--primary-blue);
+        color: #ffffff;
+        border: none;
+        margin-top: 5px;
+      }
+
+      .btn-primary:hover {
+        background-color: #00153a;
+      }
+
+      .divider-container {
+        text-align: center;
+        margin: 24px 0 20px;
+        position: relative;
+      }
+
+      .divider-container::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: #f1f5f9;
+        z-index: 1;
+      }
+
+      .divider-container p {
+        font-size: 13px;
+        color: #94a3b8;
+        background-color: #ffffff;
+        padding: 0 10px;
+        display: inline-block;
+        position: relative;
+        z-index: 2;
+      }
+
+      .btn-secondary {
+        background-color: #ffffff;
+        color: var(--primary-blue);
+        border: 1.5px solid var(--primary-blue);
+      }
+
+      .btn-secondary:hover {
+        background-color: #f8fafc;
+      }
+
+      .footer-links {
+        text-align: center;
+        color: #94a3b8;
+        font-size: 13px; /* Increased */
+        background-color: #f8fafc;
+        padding: 20px; /* Restored padding */
+        border-top: 1px solid var(--light-border);
+        margin-top: auto;
+      }
+
+      .admin-link {
+        display: inline-flex;
+        align-items: center;
+        color: #64748b;
+        text-decoration: none;
+        margin-bottom: 8px;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+
+      .admin-link:hover {
+        color: var(--primary-blue);
+      }
+
+      .admin-link svg {
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+        stroke: currentColor;
+      }
+
+      /* --- Registration Specific Styles --- */
+      .reg-header {
+        text-align: center;
+        margin-bottom: 20px; /* Restored */
+      }
+
+      .reg-header h3 {
+        font-size: 22px; /* Increased */
+        color: var(--primary-blue);
+        margin-bottom: 4px;
+        font-weight: 700;
+      }
+
+      .reg-header p {
+        font-size: 14px; /* Increased */
+        color: var(--text-gray);
+      }
+
+      .role-selector {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 24px; /* Restored */
+      }
+
+      .role-card {
+        flex: 1;
+        border: 1px solid var(--light-border);
+        border-radius: 8px;
+        padding: 12px; /* Increased */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: var(--text-gray);
+      }
+
+      .role-card svg {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 6px;
+        stroke: currentColor;
+      }
+
+      .role-card span {
+        font-size: 14px; /* Increased */
+        font-weight: 600;
+      }
+
+      .role-card.active {
+        border-color: var(--primary-blue);
+        color: var(--primary-blue);
+        background-color: #f8fafc;
+      }
+
+      .auth-switch {
+        text-align: center;
+        margin-top: 24px;
+      }
+
+      .auth-switch a {
+        font-size: 14px; /* Increased */
+        color: var(--text-gray);
+        text-decoration: underline;
+        text-decoration-color: #cbd5e1;
+        text-underline-offset: 4px;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+
+      .auth-switch a:hover {
+        color: var(--primary-blue);
+        text-decoration-color: var(--primary-blue);
+      }
+
+      /* Custom Message Box */
+      #msgBox {
+        display: none;
+        position: fixed;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--primary-blue);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        font-weight: 500;
+        font-size: 15px;
+        text-align: center;
+        min-width: 250px;
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          top: -50px;
+          opacity: 0;
+        }
+        to {
+          top: 24px;
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="msgBox"></div>
+
+    <div class="login-wrapper">
+      <div class="login-card">
+        <!-- Shared Header Section -->
+        <div class="card-header">
+          <div class="icon-container">
+            <img src="neulogo.png" alt="Library Logo" class="logo-img" />
+          </div>
+          <h1>New Era University Library</h1>
+          <h2>Visitor Management System</h2>
+        </div>
+
+        <!-- LOGIN VIEW -->
+        <div class="card-body" id="loginView">
+          <form id="loginForm">
+            <div class="input-group">
+              <label for="email">Institutional Email</label>
+              <input type="email" id="email" placeholder="Enter email..." />
+            </div>
+
+            <div class="input-group">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter password..."
+              />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Sign In</button>
+          </form>
+
+          <div class="divider-container">
+            <p>Don't have account yet?</p>
+          </div>
+
+          <button type="button" class="btn btn-secondary" id="showRegisterBtn">
+            Register Here
+          </button>
+        </div>
+
+        <!-- REGISTRATION VIEW (Hidden by default) -->
+        <div class="card-body" id="registerView" style="display: none">
+          <div class="reg-header">
+            <h3>Create an Account</h3>
+            <p>Select your role to get started</p>
+          </div>
+
+          <div class="role-selector">
+            <div class="role-card active" data-role="student">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+              </svg>
+              <span>Student</span>
+            </div>
+            <div class="role-card" data-role="faculty">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+              <span>Faculty</span>
+            </div>
+          </div>
+
+          <form id="registerForm">
+            <div class="input-group text-left">
+              <label for="regEmail">Institutional Email</label>
+              <input
+                type="email"
+                id="regEmail"
+                placeholder="e.g. j.doe@neu.edu.ph"
+              />
+            </div>
+
+            <div class="input-group text-left">
+              <label for="regPassword">Password</label>
+              <input
+                type="password"
+                id="regPassword"
+                placeholder="Create a password"
+              />
+            </div>
+
+            <!-- Placed Name and Program Side-by-Side to save vertical space -->
+            <div class="input-row">
+              <div class="input-group text-left">
+                <label for="regName">Full Name</label>
+                <input
+                  type="text"
+                  id="regName"
+                  placeholder="e.g. Juan Dela Cruz"
+                />
+              </div>
+
+              <div class="input-group text-left">
+                <label for="regProgram">Program / Dept</label>
+                <input type="text" id="regProgram" placeholder="e.g. BSIT" />
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              Complete Registration
+            </button>
+          </form>
+
+          <div class="auth-switch">
+            <a href="#" id="showLoginLink">Already have an account? Sign In</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer / Outside Card Links -->
+      <div class="footer-links">
+        <a href="#" class="admin-link" id="adminBtn">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="6" y="11" width="12" height="10" rx="2" ry="2"></rect>
+            <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+          </svg>
+          Admin Access
+        </a>
+        <p class="copyright">© 2026 New Era University Library</p>
+      </div>
+    </div>
+
+    <script>
+      const loginView = document.getElementById("loginView");
+      const registerView = document.getElementById("registerView");
+      const showRegisterBtn = document.getElementById("showRegisterBtn");
+      const showLoginLink = document.getElementById("showLoginLink");
+
+      // Set to "flex" instead of "block" to keep items vertically centered
+      showRegisterBtn.addEventListener("click", () => {
+        loginView.style.display = "none";
+        registerView.style.display = "flex";
+      });
+
+      showLoginLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        registerView.style.display = "none";
+        loginView.style.display = "flex";
+      });
+
+      let selectedRole = "student";
+      const roleCards = document.querySelectorAll(".role-card");
+      const regProgramInput = document.getElementById("regProgram");
+
+      roleCards.forEach((card) => {
+        card.addEventListener("click", () => {
+          roleCards.forEach((c) => c.classList.remove("active"));
+          card.classList.add("active");
+
+          selectedRole = card.getAttribute("data-role");
+
+          if (selectedRole === "student") {
+            regProgramInput.placeholder = "e.g. BSIT";
+          } else {
+            regProgramInput.placeholder = "e.g. Faculty";
+          }
+        });
+      });
+
+      function showMessage(msg) {
+        const msgBox = document.getElementById("msgBox");
+        msgBox.textContent = msg;
+        msgBox.style.display = "block";
+
+        setTimeout(() => {
+          msgBox.style.display = "none";
+        }, 3000);
+      }
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value.trim();
+
+          if (!email || !password) {
+            showMessage("Please enter both your email and password.");
+            return;
+          }
+
+          showMessage("Login successful!");
+
+          setTimeout(() => {
+            window.location.href = "visitorlog.html";
+          }, 1500);
+        });
+
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const email = document.getElementById("regEmail").value.trim();
+          const password = document.getElementById("regPassword").value.trim();
+          const name = document.getElementById("regName").value.trim();
+          const program = document.getElementById("regProgram").value.trim();
+
+          if (!email || !password || !name || !program) {
+            showMessage("Please fill out all registration fields.");
+            return;
+          }
+
+          localStorage.setItem("userName", name);
+          localStorage.setItem("userEmail", email);
+          localStorage.setItem("userProgram", program);
+          localStorage.setItem("userRole", selectedRole);
+
+          showMessage("Registration successful!");
+
+          setTimeout(() => {
+            window.location.href = "visitorlog.html";
+          }, 1500);
+        });
+
+      document
+        .getElementById("adminBtn")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          showMessage("Opening Admin Access portal...");
+        });
+    </script>
+  </body>
+</html>

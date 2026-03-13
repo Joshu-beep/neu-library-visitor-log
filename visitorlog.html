@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEU Library Visitor Log</title>
+    <link rel="icon" type="image/x-icon" href="neulogo.png" />
+    <style>
+      :root {
+        --primary-blue: #001f54;
+        --accent-gold: #f59e0b;
+        --text-dark: #1e293b;
+        --text-gray: #64748b;
+        --light-border: #e2e8f0;
+        --bg-fallback: #f8fafc;
+        --btn-disabled: #94a3b8;
+
+        /* Icon Colors */
+        --icon-orange: #f97316;
+        --icon-blue: #3b82f6;
+        --icon-purple: #a855f7;
+        --icon-green: #22c55e;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        /* * BACKGROUND IMAGE SETUP
+             * To add a background image, place your image URL inside the url('') below.
+             * Example: background-image: url('https://yourwebsite.com/library-bg.jpg');
+             */
+        background-image: url("");
+        background-color: var(--bg-fallback);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* --- Navbar Styles --- */
+      .navbar {
+        background-color: var(--primary-blue);
+        border-bottom: 4px solid var(--accent-gold);
+        padding: 12px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #ffffff;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+      }
+
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .nav-logo {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+        /* Placeholder styling if no image is present */
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+      }
+
+      .nav-title {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-signout {
+        background: transparent;
+        border: none;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+
+      .btn-signout:hover {
+        opacity: 0.8;
+      }
+
+      .btn-signout svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+      }
+
+      /* --- Main Content & Card --- */
+      .main-content {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 24px;
+      }
+
+      .log-card {
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 550px;
+        overflow: hidden;
+      }
+
+      /* --- User Profile Section --- */
+      .user-profile {
+        padding: 24px 32px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        border-bottom: 1px solid var(--light-border);
+        background-color: #fcfcfd;
+      }
+
+      .avatar {
+        width: 56px;
+        height: 56px;
+        background-color: #e2e8f0;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--primary-blue);
+      }
+
+      .avatar svg {
+        width: 28px;
+        height: 28px;
+        stroke: currentColor;
+      }
+
+      .user-details h3 {
+        font-size: 18px;
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 2px;
+      }
+
+      .user-details p {
+        font-size: 13px;
+        color: var(--text-gray);
+        margin-bottom: 6px;
+      }
+
+      .badge {
+        display: inline-block;
+        background-color: #e0e7ff;
+        color: #3730a3;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 12px;
+        letter-spacing: 0.5px;
+      }
+
+      /* --- Form / Reasons Section --- */
+      .card-body {
+        padding: 32px;
+        text-align: center;
+      }
+
+      .card-body h4 {
+        font-size: 16px;
+        color: var(--text-dark);
+        margin-bottom: 24px;
+        font-weight: 600;
+      }
+
+      .reason-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+
+      .reason-option {
+        border: 1.5px solid var(--light-border);
+        border-radius: 12px;
+        padding: 20px 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        background-color: #ffffff;
+      }
+
+      .reason-option:hover {
+        border-color: #cbd5e1;
+        background-color: #f8fafc;
+      }
+
+      .reason-option.selected {
+        border-color: var(--primary-blue);
+        background-color: #f0f4f8;
+        box-shadow: 0 4px 12px rgba(0, 31, 84, 0.08);
+      }
+
+      .reason-option svg {
+        width: 28px;
+        height: 28px;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* Specific Icon Colors */
+      .icon-reading svg {
+        stroke: var(--icon-orange);
+      }
+      .icon-researching svg {
+        stroke: var(--icon-blue);
+      }
+      .icon-computer svg {
+        stroke: var(--icon-purple);
+      }
+      .icon-meeting svg {
+        stroke: var(--icon-green);
+      }
+
+      .reason-option span {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      /* --- Submit Button --- */
+      .btn-submit {
+        width: 100%;
+        padding: 16px;
+        border-radius: 10px;
+        border: none;
+        font-size: 16px;
+        font-weight: 700;
+        color: #ffffff;
+        background-color: var(--primary-blue);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-submit:hover:not(:disabled) {
+        background-color: #00153a;
+        transform: translateY(-1px);
+      }
+
+      .btn-submit:active:not(:disabled) {
+        transform: translateY(0);
+      }
+
+      .btn-submit:disabled {
+        background-color: var(--btn-disabled);
+        cursor: not-allowed;
+        opacity: 0.8;
+      }
+
+      /* Custom Message Box */
+      #msgBox {
+        display: none;
+        position: fixed;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--primary-blue);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        font-weight: 500;
+        font-size: 14px;
+        text-align: center;
+        min-width: 250px;
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          top: -50px;
+          opacity: 0;
+        }
+        to {
+          top: 24px;
+          opacity: 1;
+        }
+      }
+
+      /* Mobile Adjustments */
+      @media (max-width: 500px) {
+        .reason-grid {
+          grid-template-columns: 1fr;
+        }
+        .user-profile {
+          flex-direction: column;
+          text-align: center;
+          gap: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="msgBox"></div>
+
+    <!-- Navigation Bar -->
+    <header class="navbar">
+      <div class="nav-left">
+        <!-- LOGO IMAGE SETUP
+                 Place your logo image URL in the src="" attribute below.
+                 Example: src="https://yourwebsite.com/logo.png"
+            -->
+        <img src="neulogo.png" alt="neulogo" class="nav-logo" id="topLogo" />
+        <span class="nav-title">NEU Library Visitor Log</span>
+      </div>
+      <div class="nav-right">
+        <button class="btn-signout" id="signOutBtn">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Cancel / Sign Out
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <div class="log-card">
+        <!-- User Profile Header -->
+        <div class="user-profile">
+          <div class="avatar">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div class="user-details">
+            <h3 id="displayUserName">John Doe</h3>
+            <p id="displayUserEmail">john@neu.edu.ph</p>
+            <span class="badge" id="displayUserProgram">BSCS</span>
+          </div>
+        </div>
+
+        <!-- Interaction Form -->
+        <div class="card-body">
+          <h4>What is your reason for visiting today?</h4>
+
+          <div class="reason-grid">
+            <!-- Option 1: Reading -->
+            <div class="reason-option icon-reading" data-reason="Reading">
+              <svg viewBox="0 0 24 24">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+              <span>Reading</span>
+            </div>
+
+            <!-- Option 2: Researching -->
+            <div
+              class="reason-option icon-researching"
+              data-reason="Researching"
+            >
+              <svg viewBox="0 0 24 24">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path
+                  d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+                ></path>
+                <path d="M10 2v8l3-3 3 3V2"></path>
+              </svg>
+              <span>Researching</span>
+            </div>
+
+            <!-- Option 3: Use of Computer -->
+            <div
+              class="reason-option icon-computer"
+              data-reason="Use of Computer"
+            >
+              <svg viewBox="0 0 24 24">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+              <span>Use of Computer</span>
+            </div>
+
+            <!-- Option 4: Meeting -->
+            <div class="reason-option icon-meeting" data-reason="Meeting">
+              <svg viewBox="0 0 24 24">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span>Meeting</span>
+            </div>
+          </div>
+
+          <button id="submitLogBtn" class="btn-submit" disabled>
+            Log Visit
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const reasonOptions = document.querySelectorAll(".reason-option");
+      const submitLogBtn = document.getElementById("submitLogBtn");
+      let selectedReason = null;
+
+      const userName = localStorage.getItem("userName");
+      const userEmail = localStorage.getItem("userEmail");
+      const userProgram = localStorage.getItem("userProgram");
+
+      if (userName) {
+        document.getElementById("displayUserName").textContent = userName;
+      }
+
+      if (userEmail) {
+        document.getElementById("displayUserEmail").textContent = userEmail;
+      }
+
+      if (userProgram) {
+        document.getElementById("displayUserProgram").textContent = userProgram;
+      }
+
+      reasonOptions.forEach((option) => {
+        option.addEventListener("click", () => {
+          reasonOptions.forEach((opt) => opt.classList.remove("selected"));
+
+          option.classList.add("selected");
+
+          selectedReason = option.getAttribute("data-reason");
+
+          submitLogBtn.disabled = false;
+        });
+      });
+
+      function showMessage(msg) {
+        const msgBox = document.getElementById("msgBox");
+        msgBox.textContent = msg;
+        msgBox.style.display = "block";
+
+        setTimeout(() => {
+          msgBox.style.display = "none";
+        }, 3000);
+      }
+
+      submitLogBtn.addEventListener("click", () => {
+        if (selectedReason) {
+          showMessage("Visit successfully logged!");
+
+          setTimeout(() => {
+            reasonOptions.forEach((opt) => opt.classList.remove("selected"));
+            submitLogBtn.disabled = true;
+          }, 1500);
+        }
+      });
+
+      document.getElementById("signOutBtn").addEventListener("click", () => {
+        localStorage.clear();
+
+        showMessage("Signing out...");
+
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1200);
+      });
+    </script>
+  </body>
+</html>
