@@ -177,9 +177,11 @@
           </svg>
         </div>
         <h2 class="modal-title">Welcome to NEU Library</h2>
-        <p class="modal-text">Your visit has been successfully logged. Have a productive day!</p>
+        <p class="modal-text">Your visit has been logged. Save your QR code for faster check-in next time!</p>
+        <div id="qrContainer" style="margin: 0 auto 16px; width: 160px; height: 160px;"></div>
+        <p style="font-size:11px;color:#94a3b8;margin-bottom:16px;">Screenshot this QR code — scan it at the library entrance next visit</p>
         <p class="modal-text" style="font-size: 13px; margin-bottom: 0">
-          Logging out automatically in <span id="countdown" class="countdown-text">3</span> seconds...
+          Closing in <span id="countdown" class="countdown-text">3</span> seconds...
         </p>
       </div>
     </div>
@@ -228,6 +230,14 @@
             </div>
           </div>
           <button id="submitLogBtn" class="btn-submit" disabled>Log Visit</button>
+          <button id="showQrBtn" style="width:100%;padding:13px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;border:1.5px solid var(--accent-gold);background:#fff;color:#b45309;margin-top:12px;transition:all 0.2s ease;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+              <path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"></path>
+            </svg>
+            My QR Code
+          </button>
           <button id="logoutBtn" style="width:100%;padding:13px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;border:1.5px solid #001f54;background:#fff;color:#001f54;margin-top:12px;transition:all 0.2s ease;display:flex;align-items:center;justify-content:center;gap:8px;">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -236,18 +246,35 @@
             </svg>
             Log Out
           </button>
+
+          <!-- QR Modal -->
+          <div id="qrModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;">
+            <div style="background:white;border-radius:16px;padding:32px;text-align:center;max-width:320px;width:90%;box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+              <h3 style="color:var(--primary-blue);font-size:18px;font-weight:700;margin-bottom:6px;">Your Library QR Code</h3>
+              <p style="font-size:13px;color:var(--text-gray);margin-bottom:20px;">Show this at the library entrance for instant check-in</p>
+              <div id="qrModalCanvas" style="margin:0 auto 16px;width:180px;height:180px;"></div>
+              <p id="qrModalName" style="font-weight:700;color:var(--primary-blue);font-size:15px;margin-bottom:4px;"></p>
+              <p id="qrModalProgram" style="font-size:12px;color:var(--text-gray);margin-bottom:20px;"></p>
+              <button onclick="document.getElementById('qrModal').style.display='none'" style="width:100%;padding:12px;background:var(--primary-blue);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Close</button>
+            </div>
+          </div>
         </div>
       </div>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script type="module">
       import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
       const SUPABASE_URL = 'https://ruajjuxabwfqpawpjosl.supabase.co';
       const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1YWpqdXhhYndmcXBhd3Bqb3NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0NTg0MjksImV4cCI6MjA4OTAzNDQyOX0.O1ZbG4vC6q4DxQKTq664i3e4xwUYcvgVDOsuNMDNK4I';
       const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-      // Redirect if not logged in
+
       const userId = localStorage.getItem("userId");
       if (!userId) { window.location.href = "index.html"; }
+
+      const userName = localStorage.getItem("userName") || "Guest";
+      const userEmail = localStorage.getItem("userEmail") || "—";
+      const userProgram = localStorage.getItem("userProgram") || "—";
 
       const reasonOptions = document.querySelectorAll(".reason-option");
       const submitLogBtn = document.getElementById("submitLogBtn");
@@ -255,10 +282,32 @@
       const countdownEl = document.getElementById("countdown");
       let selectedReason = null;
 
-      // Load user details from localStorage
-      document.getElementById("displayUserName").textContent = localStorage.getItem("userName") || "Guest";
-      document.getElementById("displayUserEmail").textContent = localStorage.getItem("userEmail") || "—";
-      document.getElementById("displayUserProgram").textContent = localStorage.getItem("userProgram") || "—";
+      // Load user details
+      document.getElementById("displayUserName").textContent = userName;
+      document.getElementById("displayUserEmail").textContent = userEmail;
+      document.getElementById("displayUserProgram").textContent = userProgram;
+
+      // ── Generate QR Code ──
+      // QR encodes a JSON payload with userId — qrscan.html decodes this
+      function generateQR(containerId, size) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+        const payload = JSON.stringify({ uid: userId, name: userName, email: userEmail });
+        new QRCode(container, {
+          text: payload,
+          width: size, height: size,
+          colorDark: "#001f54", colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+
+      // My QR Code button
+      document.getElementById("showQrBtn").addEventListener("click", () => {
+        generateQR("qrModalCanvas", 180);
+        document.getElementById("qrModalName").textContent = userName;
+        document.getElementById("qrModalProgram").textContent = userProgram;
+        document.getElementById("qrModal").style.display = "flex";
+      });
 
       // Handle reason selection
       reasonOptions.forEach((option) => {
@@ -304,7 +353,8 @@
         // Save the log ID so the logout button can update its status
         if (logData?.id) localStorage.setItem("currentLogId", logData.id);
 
-        // Show welcome modal and countdown
+        // Show welcome modal with QR and countdown
+        generateQR("qrContainer", 160);
         welcomeModal.classList.add("active");
         let timeLeft = 3;
         countdownEl.textContent = timeLeft;
