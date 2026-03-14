@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEU Library — QR Check-in</title>
+    <link rel="icon" type="image/x-icon" href="neulogo.png" />
+    <style>
+      :root {
+        --primary-blue: #001f54;
+        --accent-gold: #f59e0b;
+        --bg: #f4f6f9;
+        --border: #e2e8f0;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+      body { background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; }
+
+      .navbar {
+        background-color: var(--primary-blue); color: white; padding: 12px 24px;
+        display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 4px solid var(--accent-gold);
+      }
+      .nav-left { display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 700; }
+      .nav-logo { width: 32px; height: 32px; object-fit: contain; border-radius: 50%; background: white; padding: 2px; }
+      .btn-back { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: white; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px; }
+      .btn-back:hover { background: rgba(255,255,255,0.1); }
+
+      .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+
+      .scan-card {
+        background: white; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        width: 100%; max-width: 480px; overflow: hidden;
+      }
+      .scan-header { background: var(--primary-blue); color: white; padding: 20px 24px; text-align: center; border-bottom: 3px solid var(--accent-gold); }
+      .scan-header h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+      .scan-header p { font-size: 13px; opacity: 0.8; }
+
+      .scan-body { padding: 28px 24px; }
+
+      /* Camera viewfinder */
+      .viewfinder-wrap {
+        position: relative; border-radius: 12px; overflow: hidden;
+        background: #000; margin-bottom: 20px;
+        aspect-ratio: 1; width: 100%;
+      }
+      #qr-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .scan-overlay {
+        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none;
+      }
+      .scan-frame {
+        width: 60%; height: 60%; position: relative;
+      }
+      .scan-frame::before, .scan-frame::after,
+      .scan-frame span::before, .scan-frame span::after {
+        content: ''; position: absolute; width: 24px; height: 24px; border-color: var(--accent-gold); border-style: solid;
+      }
+      .scan-frame::before { top: 0; left: 0; border-width: 3px 0 0 3px; }
+      .scan-frame::after  { top: 0; right: 0; border-width: 3px 3px 0 0; }
+      .scan-frame span::before { bottom: 0; left: 0; border-width: 0 0 3px 3px; }
+      .scan-frame span::after  { bottom: 0; right: 0; border-width: 0 3px 3px 0; }
+      .scan-line {
+        position: absolute; left: 20%; right: 20%; height: 2px;
+        background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+        animation: scanline 2s linear infinite;
+      }
+      @keyframes scanline { 0%{top:20%} 50%{top:80%} 100%{top:20%} }
+
+      .cam-status { text-align: center; font-size: 13px; color: #64748b; margin-bottom: 16px; }
+
+      /* Reason buttons */
+      .reason-section { margin-bottom: 20px; }
+      .reason-section label { font-size: 14px; font-weight: 600; color: #334155; display: block; margin-bottom: 10px; }
+      .reason-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .reason-btn {
+        padding: 12px 8px; border: 1.5px solid var(--border); border-radius: 8px;
+        background: white; font-size: 13px; font-weight: 600; color: #475569;
+        cursor: pointer; transition: all 0.15s; text-align: center;
+      }
+      .reason-btn.selected { border-color: var(--primary-blue); background: #eff4ff; color: var(--primary-blue); }
+      .reason-btn:hover:not(.selected) { border-color: #94a3b8; }
+
+      .btn-checkin {
+        width: 100%; padding: 15px; background: var(--primary-blue); color: white;
+        border: none; border-radius: 10px; font-size: 16px; font-weight: 700;
+        cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+      }
+      .btn-checkin:disabled { background: #94a3b8; cursor: not-allowed; }
+      .btn-checkin:hover:not(:disabled) { background: #00153a; }
+
+      /* Scanned user preview */
+      .user-preview {
+        display: none; background: #f0f9ff; border: 1.5px solid #bae6fd;
+        border-radius: 10px; padding: 14px 16px; margin-bottom: 16px;
+        align-items: center; gap: 12px;
+      }
+      .user-preview.show { display: flex; }
+      .user-avatar {
+        width: 44px; height: 44px; background: var(--primary-blue); border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;
+        font-size: 18px; font-weight: 700;
+      }
+      .user-info p { font-size: 13px; color: #0369a1; }
+      .user-info strong { font-size: 15px; color: #0c4a6e; font-weight: 700; }
+
+      /* Result message */
+      #resultMsg {
+        display: none; padding: 14px 16px; border-radius: 8px; font-size: 14px;
+        font-weight: 600; text-align: center; margin-bottom: 16px;
+      }
+      #resultMsg.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+      #resultMsg.error   { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+      .manual-link { text-align: center; margin-top: 16px; font-size: 13px; color: #94a3b8; }
+      .manual-link a { color: var(--primary-blue); font-weight: 600; text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-left">
+        <img src="neulogo.png" alt="NEU" class="nav-logo" onerror="this.style.display='none'" />
+        QR Check-in
+      </div>
+      <a href="index.html" class="btn-back">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        Back to Login
+      </a>
+    </nav>
+
+    <main class="main">
+      <div class="scan-card">
+        <div class="scan-header">
+          <h2>Quick QR Check-in</h2>
+          <p>Point your camera at your library QR code</p>
+        </div>
+        <div class="scan-body">
+
+          <!-- Camera viewfinder -->
+          <div class="viewfinder-wrap">
+            <video id="qr-video" autoplay playsinline muted></video>
+            <div class="scan-overlay">
+              <div class="scan-frame"><span></span><div class="scan-line"></div></div>
+            </div>
+          </div>
+          <p class="cam-status" id="camStatus">Starting camera...</p>
+
+          <!-- Scanned user preview -->
+          <div class="user-preview" id="userPreview">
+            <div class="user-avatar" id="userInitial">?</div>
+            <div class="user-info">
+              <strong id="scannedName">—</strong>
+              <p id="scannedProgram">—</p>
+              <p id="scannedEmail" style="font-size:12px;opacity:0.7">—</p>
+            </div>
+          </div>
+
+          <!-- Result message -->
+          <div id="resultMsg"></div>
+
+          <!-- Reason selector -->
+          <div class="reason-section" id="reasonSection">
+            <label>Select reason for visit:</label>
+            <div class="reason-btns">
+              <button class="reason-btn" data-reason="Reading">📖 Reading</button>
+              <button class="reason-btn" data-reason="Researching">🔬 Researching</button>
+              <button class="reason-btn" data-reason="Use of Computer">💻 Computer</button>
+              <button class="reason-btn" data-reason="Meeting">👥 Meeting</button>
+            </div>
+          </div>
+
+          <button class="btn-checkin" id="checkinBtn" disabled>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            Scan QR to check in
+          </button>
+
+          <div class="manual-link">
+            Prefer to log in manually? <a href="index.html">Sign in here</a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script type="module">
+      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+      import jsQR from 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
+
+      const SUPABASE_URL = 'https://ruajjuxabwfqpawpjosl.supabase.co';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1YWpqdXhhYndmcXBhd3Bqb3NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0NTg0MjksImV4cCI6MjA4OTAzNDQyOX0.O1ZbG4vC6q4DxQKTq664i3e4xwUYcvgVDOsuNMDNK4I';
+      const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      let scannedUserId = null;
+      let selectedReason = null;
+      let scanning = true;
+
+      // ── Reason buttons ──
+      document.querySelectorAll('.reason-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedReason = btn.dataset.reason;
+          updateCheckinBtn();
+        });
+      });
+
+      function updateCheckinBtn() {
+        const btn = document.getElementById('checkinBtn');
+        if (scannedUserId && selectedReason) {
+          btn.disabled = false;
+          btn.textContent = `✓ Check in — ${selectedReason}`;
+        } else if (scannedUserId) {
+          btn.disabled = true;
+          btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Select a reason`;
+        } else {
+          btn.disabled = true;
+          btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Scan QR to check in`;
+        }
+      }
+
+      // ── Camera & QR Scanning ──
+      const video = document.getElementById('qr-video');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const camStatus = document.getElementById('camStatus');
+
+      async function startCamera() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 640 } }
+          });
+          video.srcObject = stream;
+          camStatus.textContent = 'Camera ready — hold QR code up to scan';
+          requestAnimationFrame(scanFrame);
+        } catch (err) {
+          camStatus.textContent = '⚠ Camera not available. Ask staff to scan manually.';
+          console.error('Camera error:', err);
+        }
+      }
+
+      function scanFrame() {
+        if (!scanning) return;
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          canvas.width  = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
+          if (code) {
+            handleQRCode(code.data);
+            return;
+          }
+        }
+        requestAnimationFrame(scanFrame);
+      }
+
+      async function handleQRCode(raw) {
+        try {
+          const payload = JSON.parse(raw);
+          if (!payload.uid) throw new Error('Invalid QR');
+
+          scanning = false; // pause scanning
+          camStatus.textContent = '✓ QR code detected!';
+
+          // Verify user in Supabase
+          const { data: user, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', payload.uid)
+            .single();
+
+          if (error || !user) {
+            showResult('error', 'QR code not recognised. Please sign in manually.');
+            setTimeout(() => { scanning = true; requestAnimationFrame(scanFrame); }, 3000);
+            return;
+          }
+
+          if (user.is_blocked) {
+            showResult('error', `Access denied — this account has been blocked.`);
+            setTimeout(() => { scanning = true; requestAnimationFrame(scanFrame); }, 3000);
+            return;
+          }
+
+          // Show user preview
+          scannedUserId = user.id;
+          document.getElementById('userInitial').textContent = user.name?.charAt(0)?.toUpperCase() || '?';
+          document.getElementById('scannedName').textContent = user.name || '—';
+          document.getElementById('scannedProgram').textContent = user.program || '—';
+          document.getElementById('scannedEmail').textContent = user.email || '—';
+          document.getElementById('userPreview').classList.add('show');
+          updateCheckinBtn();
+
+        } catch (e) {
+          // Not valid JSON — resume scanning silently
+          scanning = true;
+          requestAnimationFrame(scanFrame);
+        }
+      }
+
+      // ── Check-in button ──
+      document.getElementById('checkinBtn').addEventListener('click', async () => {
+        if (!scannedUserId || !selectedReason) return;
+
+        const btn = document.getElementById('checkinBtn');
+        btn.disabled = true;
+        btn.textContent = 'Logging visit...';
+
+        const { error } = await supabase.from('visit_logs').insert({
+          user_id: scannedUserId,
+          reason: selectedReason,
+          status: 'inside',
+          time_in: new Date().toISOString()
+        });
+
+        if (error) {
+          showResult('error', 'Failed to log visit: ' + error.message);
+          btn.disabled = false;
+          updateCheckinBtn();
+          return;
+        }
+
+        const name = document.getElementById('scannedName').textContent;
+        showResult('success', `✓ ${name} has been checked in for "${selectedReason}". Have a productive day!`);
+
+        // Reset after 4 seconds for next person
+        setTimeout(() => {
+          scannedUserId = null;
+          selectedReason = null;
+          scanning = true;
+          document.getElementById('userPreview').classList.remove('show');
+          document.getElementById('resultMsg').style.display = 'none';
+          document.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('selected'));
+          updateCheckinBtn();
+          camStatus.textContent = 'Camera ready — hold QR code up to scan';
+          requestAnimationFrame(scanFrame);
+        }, 4000);
+      });
+
+      function showResult(type, msg) {
+        const el = document.getElementById('resultMsg');
+        el.textContent = msg;
+        el.className = type;
+        el.style.display = 'block';
+      }
+
+      startCamera();
+    </script>
+  </body>
+</html>
