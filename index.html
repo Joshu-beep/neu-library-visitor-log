@@ -462,45 +462,101 @@
         btn.disabled = true;
         btn.textContent = "Creating account...";
 
-        const email = document.getElementById("regEmail").value;
+        const email = document.getElementById("regEmail").value.trim();
         const password = document.getElementById("regPassword").value;
-        const name = document.getElementById("regName").value;
-        const program = document.getElementById("regProgram").value;
+        const name = document.getElementById("regName").value.trim();
+        const program = document.getElementById("regProgram").value.trim();
         const role = document.querySelector(".role-card.active").dataset.role;
 
-        // Create auth user
-        const { data, error } = await supabase.auth.signUp({ email, password });
-
-        if (error) {
-          showMessage(error.message, "#991b1b");
+        const resetBtn = () => {
           btn.disabled = false;
           btn.textContent = "Complete Registration";
-          return;
+        };
+
+        // Safety timeout — re-enable after 15s no matter what
+        const safetyTimer = setTimeout(() => {
+          resetBtn();
+          showMessage("Request timed out. Check your internet or Supabase config.", "#991b1b");
+        }, 15000);
+
+        try {
+          // Step 1: Validate password length
+          if (password.length < 6) {
+            clearTimeout(safetyTimer);
+            showMessage("Password must be at least 6 characters.", "#991b1b");
+            resetBtn();
+            return;
+          }
+
+          btn.textContent = "Step 1/2: Creating auth...";
+
+          // Step 2: Sign up with Supabase Auth
+          const { data, error } = await supabase.auth.signUp({ email, password });
+
+          if (error) {
+            clearTimeout(safetyTimer);
+            const msg = error.message.toLowerCase();
+            if (msg.includes("already registered") || msg.includes("already exists") || msg.includes("user already")) {
+              showMessage("This email is already registered. Please sign in.", "#991b1b");
+            } else if (msg.includes("invalid email")) {
+              showMessage("Please enter a valid email address.", "#991b1b");
+            } else if (msg.includes("password")) {
+              showMessage("Password error: " + error.message, "#991b1b");
+            } else {
+              showMessage("Sign up failed: " + error.message, "#991b1b");
+            }
+            resetBtn();
+            return;
+          }
+
+          if (!data.user) {
+            clearTimeout(safetyTimer);
+            showMessage("Sign up failed — no user returned. Check your Supabase email confirmation settings.", "#991b1b");
+            resetBtn();
+            return;
+          }
+
+          btn.textContent = "Step 2/2: Saving profile...";
+
+          // Step 3: Insert profile into users table
+          const { error: insertError } = await supabase.from("users").insert({
+            id: data.user.id,
+            email,
+            name,
+            program,
+            role
+          });
+
+          clearTimeout(safetyTimer);
+
+          if (insertError) {
+            const msg = insertError.message.toLowerCase();
+            if (msg.includes("duplicate") || msg.includes("unique")) {
+              showMessage("This email is already registered. Please sign in.", "#991b1b");
+            } else if (msg.includes("row-level security") || msg.includes("rls") || msg.includes("policy")) {
+              showMessage("Database permission error. Please enable INSERT policy on the users table in Supabase.", "#991b1b");
+            } else {
+              showMessage("Profile save failed: " + insertError.message, "#991b1b");
+            }
+            resetBtn();
+            return;
+          }
+
+          // Success
+          localStorage.setItem("userName", name);
+          localStorage.setItem("userEmail", email);
+          localStorage.setItem("userProgram", program);
+          localStorage.setItem("userId", data.user.id);
+
+          showMessage("Registration successful!", "#16a34a");
+          setTimeout(() => { window.location.href = "visitorlog.html"; }, 1000);
+
+        } catch (err) {
+          clearTimeout(safetyTimer);
+          console.error("Registration error:", err);
+          showMessage("Unexpected error: " + (err.message || "Please check your connection and Supabase URL/Key."), "#991b1b");
+          resetBtn();
         }
-
-        // Insert profile into users table
-        const { error: insertError } = await supabase.from("users").insert({
-          id: data.user.id,
-          email,
-          name,
-          program,
-          role
-        });
-
-        if (insertError) {
-          showMessage("Account created but profile save failed: " + insertError.message, "#991b1b");
-          btn.disabled = false;
-          btn.textContent = "Complete Registration";
-          return;
-        }
-
-        localStorage.setItem("userName", name);
-        localStorage.setItem("userEmail", email);
-        localStorage.setItem("userProgram", program);
-        localStorage.setItem("userId", data.user.id);
-
-        showMessage("Registration successful!");
-        setTimeout(() => { window.location.href = "visitorlog.html"; }, 1000);
       };
 
       // ── ADMIN LOGIN (hardcoded credentials — keep as is or move to env) ──
