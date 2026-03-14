@@ -286,10 +286,14 @@
         submitLogBtn.disabled = true;
         submitLogBtn.textContent = "Logging visit...";
 
+        // Always store as UTC — admindashboard converts to PH time on display
+        const timeIn = new Date().toISOString();
+
         const { error } = await supabase.from("visit_logs").insert({
           user_id: userId,
           reason: selectedReason,
-          status: "inside"
+          status: "inside",
+          time_in: timeIn
         });
 
         if (error) {
