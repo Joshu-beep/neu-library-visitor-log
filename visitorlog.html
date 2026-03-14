@@ -305,6 +305,77 @@
         }
       }
 
+      /* --- Modal Window --- */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      .modal-overlay.active .modal-content {
+        transform: translateY(0);
+      }
+
+      .modal-icon {
+        width: 64px;
+        height: 64px;
+        background: #f0fdf4;
+        color: #16a34a;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px auto;
+      }
+
+      .modal-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--primary-blue);
+        margin-bottom: 10px;
+      }
+
+      .modal-text {
+        color: var(--text-gray);
+        margin-bottom: 24px;
+        line-height: 1.5;
+        font-size: 15px;
+      }
+
+      .countdown-text {
+        font-weight: bold;
+        color: var(--primary-blue);
+        font-size: 18px;
+      }
+
       /* Mobile Adjustments */
       @media (max-width: 500px) {
         .reason-grid {
@@ -321,14 +392,48 @@
   <body>
     <div id="msgBox"></div>
 
+    <!-- Welcome Modal -->
+    <div id="welcomeModal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-icon">
+          <svg
+            viewBox="0 0 24 24"
+            width="32"
+            height="32"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <h2 class="modal-title">Welcome to NEU Library</h2>
+        <p class="modal-text">
+          Your visit has been successfully logged. Have a productive day!
+        </p>
+        <p class="modal-text" style="font-size: 13px; margin-bottom: 0">
+          Logging out automatically in
+          <span id="countdown" class="countdown-text">5</span> seconds...
+        </p>
+      </div>
+    </div>
+
     <!-- Navigation Bar -->
     <header class="navbar">
       <div class="nav-left">
         <!-- LOGO IMAGE SETUP
-                 Place your logo image URL in the src="" attribute below.
-                 Example: src="https://yourwebsite.com/logo.png"
-            -->
-        <img src="neulogo.png" alt="neulogo" class="nav-logo" id="topLogo" />
+             Place your logo image URL in the src="" attribute below.
+             Example: src="https://yourwebsite.com/logo.png"
+        -->
+        <img
+          src="neulogo.png"
+          alt="neulogo"
+          class="nav-logo"
+          id="topLogo"
+          onerror="this.style.display = 'none'"
+        />
         <span class="nav-title">NEU Library Visitor Log</span>
       </div>
       <div class="nav-right">
@@ -437,8 +542,11 @@
     <script>
       const reasonOptions = document.querySelectorAll(".reason-option");
       const submitLogBtn = document.getElementById("submitLogBtn");
+      const welcomeModal = document.getElementById("welcomeModal");
+      const countdownEl = document.getElementById("countdown");
       let selectedReason = null;
 
+      // Load user details from Local Storage
       const userName = localStorage.getItem("userName");
       const userEmail = localStorage.getItem("userEmail");
       const userProgram = localStorage.getItem("userProgram");
@@ -446,23 +554,19 @@
       if (userName) {
         document.getElementById("displayUserName").textContent = userName;
       }
-
       if (userEmail) {
         document.getElementById("displayUserEmail").textContent = userEmail;
       }
-
       if (userProgram) {
         document.getElementById("displayUserProgram").textContent = userProgram;
       }
 
+      // Handle Option Selection
       reasonOptions.forEach((option) => {
         option.addEventListener("click", () => {
           reasonOptions.forEach((opt) => opt.classList.remove("selected"));
-
           option.classList.add("selected");
-
           selectedReason = option.getAttribute("data-reason");
-
           submitLogBtn.disabled = false;
         });
       });
@@ -477,20 +581,34 @@
         }, 3000);
       }
 
+      // Handle Submit Log Visit
       submitLogBtn.addEventListener("click", () => {
         if (selectedReason) {
-          showMessage("Visit successfully logged!");
+          // Show the Welcome Modal
+          welcomeModal.classList.add("active");
 
-          setTimeout(() => {
-            reasonOptions.forEach((opt) => opt.classList.remove("selected"));
-            submitLogBtn.disabled = true;
-          }, 1500);
+          let timeLeft = 5;
+          countdownEl.textContent = timeLeft;
+
+          // Start the 5-second countdown timer
+          const timer = setInterval(() => {
+            timeLeft--;
+            countdownEl.textContent = timeLeft;
+
+            if (timeLeft <= 0) {
+              clearInterval(timer);
+
+              // Log out actions
+              localStorage.clear();
+              window.location.href = "index.html";
+            }
+          }, 1000);
         }
       });
 
+      // Handle Sign Out Button
       document.getElementById("signOutBtn").addEventListener("click", () => {
         localStorage.clear();
-
         showMessage("Signing out...");
 
         setTimeout(() => {
