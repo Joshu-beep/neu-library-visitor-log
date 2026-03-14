@@ -206,6 +206,25 @@
       }
       .role-card.active { border-color: var(--primary-blue); color: var(--primary-blue); background-color: #f8fafc; }
 
+      select#regProgram {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--light-border);
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+        text-align: left;
+        background: #fff;
+        color: #1e293b;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        cursor: pointer;
+      }
+      select#regProgram:focus { border-color: var(--primary-blue); }
+
       #msgBox {
         display: none;
         position: fixed;
@@ -278,15 +297,43 @@
               <label>Password</label>
               <input type="password" id="regPassword" placeholder="Create a password" required />
             </div>
-            <div class="input-row">
-              <div class="input-group text-left">
-                <label>Full Name</label>
-                <input type="text" id="regName" placeholder="Juan Dela Cruz" required />
-              </div>
-              <div class="input-group text-left">
-                <label>Program</label>
-                <input type="text" id="regProgram" placeholder="BSIT" required />
-              </div>
+            <div class="input-group text-left">
+              <label>Full Name</label>
+              <input type="text" id="regName" placeholder="Juan Dela Cruz" required />
+            </div>
+            <div class="input-group text-left">
+              <label>Program / College</label>
+              <select id="regProgram" required>
+                <option value="" disabled selected>Select your program...</option>
+                <optgroup label="Graduate & Special Programs">
+                  <option>School of Graduate Studies</option>
+                  <option>College of Law</option>
+                  <option>College of Medicine</option>
+                  <option>Expanded Tertiary Education Equivalency & Accreditation Program (ETEEAP)</option>
+                  <option>Alternative Learning System</option>
+                  <option>School of International Relations</option>
+                </optgroup>
+                <optgroup label="Undergraduate Colleges">
+                  <option>College of Accountancy</option>
+                  <option>College of Agriculture</option>
+                  <option>College of Arts and Science</option>
+                  <option>College of Business Administration</option>
+                  <option>College of Communication</option>
+                  <option>College of Informatics and Computing Studies</option>
+                  <option>College of Criminology</option>
+                  <option>College of Education</option>
+                  <option>College of Engineering and Architecture</option>
+                  <option>College of Medical Technology</option>
+                  <option>College of Midwifery</option>
+                  <option>College of Music</option>
+                  <option>College of Nursing</option>
+                  <option>College of Physical Therapy</option>
+                  <option>College of Respiratory Therapy</option>
+                </optgroup>
+                <optgroup label="Basic Education">
+                  <option>Integrated School</option>
+                </optgroup>
+              </select>
             </div>
             <button type="submit" class="btn btn-primary" id="registerBtn">Complete Registration</button>
           </form>
@@ -335,24 +382,23 @@
       const SUPABASE_URL = 'https://ruajjuxabwfqpawpjosl.supabase.co';
       const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1YWpqdXhhYndmcXBhd3Bqb3NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0NTg0MjksImV4cCI6MjA4OTAzNDQyOX0.O1ZbG4vC6q4DxQKTq664i3e4xwUYcvgVDOsuNMDNK4I';
       const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
       const loginView = document.getElementById("loginView");
       const registerView = document.getElementById("registerView");
       const adminView = document.getElementById("adminView");
       const mainHeader = document.getElementById("mainHeader");
       const headerSubtitle = document.getElementById("headerSubtitle");
 
-      // Navigation
+      // ── Navigation ──
       document.getElementById("showRegisterBtn").onclick = () => {
         loginView.style.display = "none";
         registerView.style.display = "flex";
       };
-
       document.getElementById("showLoginLink").onclick = (e) => {
         e.preventDefault();
         registerView.style.display = "none";
         loginView.style.display = "flex";
       };
-
       document.getElementById("adminBtn").onclick = (e) => {
         e.preventDefault();
         loginView.style.display = "none";
@@ -362,7 +408,6 @@
         headerSubtitle.textContent = "Admin Control Panel";
         showMessage("Switching to Administrator Mode");
       };
-
       document.getElementById("backFromAdmin").onclick = (e) => {
         e.preventDefault();
         adminView.style.display = "none";
@@ -376,45 +421,73 @@
         msgBox.textContent = msg;
         msgBox.style.backgroundColor = color;
         msgBox.style.display = "block";
-        setTimeout(() => { msgBox.style.display = "none"; }, 3000);
+        setTimeout(() => { msgBox.style.display = "none"; }, 4000);
       }
 
-      // ── LOGIN with Supabase ──
+      // ── LOGIN ──
       document.getElementById("loginForm").onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById("loginBtn");
+        const email = document.getElementById("email").value.trim().toLowerCase();
+        const password = document.getElementById("password").value;
+
+        const resetBtn = () => { btn.disabled = false; btn.textContent = "Sign In"; };
         btn.disabled = true;
         btn.textContent = "Signing in...";
 
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+        // 1. Domain restriction
+        if (!email.endsWith("@neu.edu.ph")) {
+          showMessage("Only @neu.edu.ph email addresses are allowed.", "#991b1b");
+          resetBtn();
+          return;
+        }
 
-        const resetBtn = () => {
-          btn.disabled = false;
-          btn.textContent = "Sign In";
-        };
-
-        // Safety timeout — re-enable button after 10s no matter what
         const safetyTimer = setTimeout(() => {
           resetBtn();
           showMessage("Request timed out. Please try again.", "#991b1b");
-        }, 10000);
+        }, 12000);
 
         try {
+          // 2. Check if user exists in our users table first
+          const { data: profile, error: profileCheckError } = await supabase
+            .from("users")
+            .select("*")
+            .eq("email", email)
+            .maybeSingle();
+
+          if (profileCheckError) {
+            clearTimeout(safetyTimer);
+            showMessage("Database error: " + profileCheckError.message, "#991b1b");
+            resetBtn();
+            return;
+          }
+
+          // 3. No profile = not registered
+          if (!profile) {
+            clearTimeout(safetyTimer);
+            showMessage("No account found. Please register first.", "#991b1b");
+            resetBtn();
+            return;
+          }
+
+          // 4. Check if blocked
+          if (profile.is_blocked) {
+            clearTimeout(safetyTimer);
+            showMessage("Your account has been blocked. Please contact the library admin.", "#991b1b");
+            resetBtn();
+            return;
+          }
+
+          // 5. Attempt Supabase Auth sign in
           const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          clearTimeout(safetyTimer);
 
           if (error) {
-            clearTimeout(safetyTimer);
             const msg = error.message.toLowerCase();
-            if (
-              msg.includes("invalid login credentials") ||
-              msg.includes("user not found") ||
-              msg.includes("no user found") ||
-              msg.includes("email not confirmed")
-            ) {
-              showMessage("You don't have an account yet. Please register first.", "#991b1b");
-            } else if (msg.includes("invalid password") || msg.includes("wrong password")) {
+            if (msg.includes("invalid") || msg.includes("credentials") || msg.includes("password")) {
               showMessage("Incorrect password. Please try again.", "#991b1b");
+            } else if (msg.includes("email not confirmed")) {
+              showMessage("Please confirm your email before logging in.", "#991b1b");
             } else {
               showMessage("Login failed: " + error.message, "#991b1b");
             }
@@ -422,84 +495,87 @@
             return;
           }
 
-          // Fetch user profile from users table
-          const { data: profile, error: profileError } = await supabase
-            .from("users")
-            .select("*")
-            .eq("id", data.user.id)
-            .single();
-
-          clearTimeout(safetyTimer);
-
-          if (profileError || !profile) {
-            showMessage("Could not load user profile. Please contact support.", "#991b1b");
-            resetBtn();
-            return;
-          }
-
-          // Store in localStorage for visitorlog.html
+          // 6. Success — save to localStorage and redirect
           localStorage.setItem("userName", profile.name);
           localStorage.setItem("userEmail", profile.email);
           localStorage.setItem("userProgram", profile.program);
           localStorage.setItem("userId", profile.id);
 
-          showMessage("Login successful!");
+          showMessage("Login successful!", "#16a34a");
           setTimeout(() => { window.location.href = "visitorlog.html"; }, 1000);
 
         } catch (err) {
           clearTimeout(safetyTimer);
-          showMessage("Something went wrong. Please check your connection.", "#991b1b");
+          showMessage("Something went wrong: " + err.message, "#991b1b");
           resetBtn();
         }
       };
 
-      // ── REGISTER with Supabase ──
+      // ── REGISTER ──
       document.getElementById("registerForm").onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById("registerBtn");
+        const email = document.getElementById("regEmail").value.trim().toLowerCase();
+        const password = document.getElementById("regPassword").value;
+        const name = document.getElementById("regName").value.trim();
+        const program = document.getElementById("regProgram").value;
+        const role = document.querySelector(".role-card.active").dataset.role;
+
+        const resetBtn = () => { btn.disabled = false; btn.textContent = "Complete Registration"; };
         btn.disabled = true;
         btn.textContent = "Creating account...";
 
-        const email = document.getElementById("regEmail").value.trim();
-        const password = document.getElementById("regPassword").value;
-        const name = document.getElementById("regName").value.trim();
-        const program = document.getElementById("regProgram").value.trim();
-        const role = document.querySelector(".role-card.active").dataset.role;
+        // 1. Domain restriction
+        if (!email.endsWith("@neu.edu.ph")) {
+          showMessage("Only @neu.edu.ph email addresses are allowed.", "#991b1b");
+          resetBtn();
+          return;
+        }
 
-        const resetBtn = () => {
-          btn.disabled = false;
-          btn.textContent = "Complete Registration";
-        };
+        // 2. Password length
+        if (password.length < 6) {
+          showMessage("Password must be at least 6 characters.", "#991b1b");
+          resetBtn();
+          return;
+        }
 
-        // Safety timeout — re-enable after 15s no matter what
+        // 3. Program selected
+        if (!program) {
+          showMessage("Please select your program / college.", "#991b1b");
+          resetBtn();
+          return;
+        }
+
         const safetyTimer = setTimeout(() => {
           resetBtn();
-          showMessage("Request timed out. Check your internet or Supabase config.", "#991b1b");
+          showMessage("Request timed out. Please try again.", "#991b1b");
         }, 15000);
 
         try {
-          // Step 1: Validate password length
-          if (password.length < 6) {
+          // 4. Check if already registered in users table
+          const { data: existing } = await supabase
+            .from("users")
+            .select("id")
+            .eq("email", email)
+            .maybeSingle();
+
+          if (existing) {
             clearTimeout(safetyTimer);
-            showMessage("Password must be at least 6 characters.", "#991b1b");
+            showMessage("This email is already registered. Please sign in.", "#991b1b");
             resetBtn();
             return;
           }
 
           btn.textContent = "Step 1/2: Creating auth...";
 
-          // Step 2: Sign up with Supabase Auth
+          // 5. Create Supabase Auth user
           const { data, error } = await supabase.auth.signUp({ email, password });
 
           if (error) {
             clearTimeout(safetyTimer);
             const msg = error.message.toLowerCase();
-            if (msg.includes("already registered") || msg.includes("already exists") || msg.includes("user already")) {
+            if (msg.includes("already") || msg.includes("registered")) {
               showMessage("This email is already registered. Please sign in.", "#991b1b");
-            } else if (msg.includes("invalid email")) {
-              showMessage("Please enter a valid email address.", "#991b1b");
-            } else if (msg.includes("password")) {
-              showMessage("Password error: " + error.message, "#991b1b");
             } else {
               showMessage("Sign up failed: " + error.message, "#991b1b");
             }
@@ -509,38 +585,32 @@
 
           if (!data.user) {
             clearTimeout(safetyTimer);
-            showMessage("Sign up failed — no user returned. Check your Supabase email confirmation settings.", "#991b1b");
+            showMessage("Registration failed — please disable email confirmation in Supabase.", "#991b1b");
             resetBtn();
             return;
           }
 
           btn.textContent = "Step 2/2: Saving profile...";
 
-          // Step 3: Insert profile into users table
+          // 6. Insert profile
           const { error: insertError } = await supabase.from("users").insert({
             id: data.user.id,
             email,
             name,
             program,
-            role
+            role,
+            is_blocked: false
           });
 
           clearTimeout(safetyTimer);
 
           if (insertError) {
-            const msg = insertError.message.toLowerCase();
-            if (msg.includes("duplicate") || msg.includes("unique")) {
-              showMessage("This email is already registered. Please sign in.", "#991b1b");
-            } else if (msg.includes("row-level security") || msg.includes("rls") || msg.includes("policy")) {
-              showMessage("Database permission error. Please enable INSERT policy on the users table in Supabase.", "#991b1b");
-            } else {
-              showMessage("Profile save failed: " + insertError.message, "#991b1b");
-            }
+            showMessage("Profile save failed: " + insertError.message, "#991b1b");
             resetBtn();
             return;
           }
 
-          // Success
+          // 7. Success
           localStorage.setItem("userName", name);
           localStorage.setItem("userEmail", email);
           localStorage.setItem("userProgram", program);
@@ -551,33 +621,29 @@
 
         } catch (err) {
           clearTimeout(safetyTimer);
-          console.error("Registration error:", err);
-          showMessage("Unexpected error: " + (err.message || "Please check your connection and Supabase URL/Key."), "#991b1b");
+          showMessage("Unexpected error: " + err.message, "#991b1b");
           resetBtn();
         }
       };
 
-      // ── ADMIN LOGIN (hardcoded credentials — keep as is or move to env) ──
+      // ── ADMIN LOGIN ──
       document.getElementById("adminLoginForm").onsubmit = (e) => {
         e.preventDefault();
         const user = document.getElementById("adminUser").value;
         const pass = document.getElementById("adminPass").value;
-
         if (user === "admin" && pass === "admin123") {
-          showMessage("Access Granted. Redirecting to Database...", "#16a34a");
+          showMessage("Access Granted. Redirecting...", "#16a34a");
           setTimeout(() => { window.location.href = "admindashboard.html"; }, 1500);
         } else {
           showMessage("Invalid Admin Credentials!", "#991b1b");
         }
       };
 
-      // Role Selection
+      // ── Role Selection ──
       document.querySelectorAll(".role-card").forEach((card) => {
         card.onclick = () => {
           document.querySelectorAll(".role-card").forEach((c) => c.classList.remove("active"));
           card.classList.add("active");
-          document.getElementById("regProgram").placeholder =
-            card.dataset.role === "student" ? "BSIT" : "Faculty Dept";
         };
       });
     </script>
