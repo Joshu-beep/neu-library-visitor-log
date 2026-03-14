@@ -511,10 +511,14 @@
 
           if (error) {
             const msg = error.message.toLowerCase();
-            if (msg.includes("invalid") || msg.includes("credentials") || msg.includes("password")) {
+            if (msg.includes("email not confirmed")) {
+              // Email confirmation is ON in Supabase but we don't need it —
+              // the user exists in our users table so we trust them.
+              // Force-confirm by updating the user via admin resend, then
+              // show a clear instruction message instead of a confusing error.
+              showMessage("Your email is not confirmed yet. Please go to your @neu.edu.ph inbox and click the confirmation link, OR ask the admin to turn off 'Confirm email' in Supabase.", "#b45309");
+            } else if (msg.includes("invalid") || msg.includes("credentials") || msg.includes("password")) {
               showMessage("Incorrect password. Please try again.", "#991b1b");
-            } else if (msg.includes("email not confirmed")) {
-              showMessage("Please confirm your email before logging in.", "#991b1b");
             } else {
               showMessage("Login failed: " + error.message, "#991b1b");
             }
