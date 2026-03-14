@@ -495,97 +495,128 @@
       </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-      const loginView = document.getElementById("loginView");
-      const registerView = document.getElementById("registerView");
-      const adminView = document.getElementById("adminView");
-      const mainHeader = document.getElementById("mainHeader");
-      const headerSubtitle = document.getElementById("headerSubtitle");
+      const SUPABASE_URL = "YOUR_SUPABASE_URL"
+const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY"
 
-      // Navigation Logic
-      document.getElementById("showRegisterBtn").onclick = () => {
-        loginView.style.display = "none";
-        registerView.style.display = "flex";
-      };
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-      document.getElementById("showLoginLink").onclick = (e) => {
-        e.preventDefault();
-        registerView.style.display = "none";
-        loginView.style.display = "flex";
-      };
+const loginView = document.getElementById("loginView")
+const registerView = document.getElementById("registerView")
+const adminView = document.getElementById("adminView")
+const mainHeader = document.getElementById("mainHeader")
+const headerSubtitle = document.getElementById("headerSubtitle")
 
-      // Admin Access Toggle
-      document.getElementById("adminBtn").onclick = (e) => {
-        e.preventDefault();
-        loginView.style.display = "none";
-        registerView.style.display = "none";
-        adminView.style.display = "flex";
-        mainHeader.classList.add("admin-mode");
-        headerSubtitle.textContent = "Admin Control Panel";
-        showMessage("Switching to Administrator Mode");
-      };
+function showMessage(msg,color="#001f54"){
+const msgBox=document.getElementById("msgBox")
+msgBox.textContent=msg
+msgBox.style.backgroundColor=color
+msgBox.style.display="block"
+setTimeout(()=>{msgBox.style.display="none"},3000)
+}
 
-      document.getElementById("backFromAdmin").onclick = (e) => {
-        e.preventDefault();
-        adminView.style.display = "none";
-        loginView.style.display = "flex";
-        mainHeader.classList.remove("admin-mode");
-        headerSubtitle.textContent = "Visitor Management System";
-      };
+document.getElementById("showRegisterBtn").onclick=()=>{
+loginView.style.display="none"
+registerView.style.display="flex"
+}
 
-      function showMessage(msg, color = "#001f54") {
-        const msgBox = document.getElementById("msgBox");
-        msgBox.textContent = msg;
-        msgBox.style.backgroundColor = color;
-        msgBox.style.display = "block";
-        setTimeout(() => {
-          msgBox.style.display = "none";
-        }, 3000);
-      }
+document.getElementById("showLoginLink").onclick=(e)=>{
+e.preventDefault()
+registerView.style.display="none"
+loginView.style.display="flex"
+}
 
-      // Login Forms Handling
-      document.getElementById("loginForm").onsubmit = (e) => {
-        e.preventDefault();
-        showMessage("Login successful!");
-        setTimeout(() => {
-          window.location.href = "visitorlog.html";
-        }, 1000);
-      };
+document.getElementById("adminBtn").onclick=(e)=>{
+e.preventDefault()
+loginView.style.display="none"
+registerView.style.display="none"
+adminView.style.display="flex"
+mainHeader.classList.add("admin-mode")
+headerSubtitle.textContent="Admin Control Panel"
+}
 
-      document.getElementById("adminLoginForm").onsubmit = (e) => {
-        e.preventDefault();
-        const user = document.getElementById("adminUser").value;
-        const pass = document.getElementById("adminPass").value;
+document.getElementById("backFromAdmin").onclick=(e)=>{
+e.preventDefault()
+adminView.style.display="none"
+loginView.style.display="flex"
+mainHeader.classList.remove("admin-mode")
+headerSubtitle.textContent="Visitor Management System"
+}
 
-        if (user === "admin" && pass === "admin123") {
-          showMessage("Access Granted. Redirecting to Database...", "#16a34a");
-          setTimeout(() => {
-            window.location.href = "admindashboard.html";
-          }, 1500);
-        } else {
-          showMessage("Invalid Admin Credentials!", "#991b1b");
-        }
-      };
+document.getElementById("registerForm").onsubmit=async(e)=>{
+e.preventDefault()
 
-      document.getElementById("registerForm").onsubmit = (e) => {
-        e.preventDefault();
-        showMessage("Registration successful!");
-        setTimeout(() => {
-          window.location.href = "visitorlog.html";
-        }, 1000);
-      };
+const email=document.getElementById("regEmail").value
+const password=document.getElementById("regPassword").value
+const name=document.getElementById("regName").value
+const program=document.getElementById("regProgram").value
+const role=document.querySelector(".role-card.active").dataset.role
 
-      // Role Selection
-      document.querySelectorAll(".role-card").forEach((card) => {
-        card.onclick = () => {
-          document
-            .querySelectorAll(".role-card")
-            .forEach((c) => c.classList.remove("active"));
-          card.classList.add("active");
-          document.getElementById("regProgram").placeholder =
-            card.dataset.role === "student" ? "BSIT" : "Faculty Dept";
-        };
-      });
+const {error}=await supabase.from("users").insert([
+{name,email,password,program,role}
+])
+
+if(error){
+showMessage("Registration failed","#991b1b")
+return
+}
+
+localStorage.setItem("userName",name)
+localStorage.setItem("userEmail",email)
+localStorage.setItem("userProgram",program)
+
+showMessage("Registration successful","#16a34a")
+
+setTimeout(()=>{
+window.location.href="visitorlog.html"
+},1000)
+}
+
+document.getElementById("loginForm").onsubmit=async(e)=>{
+e.preventDefault()
+
+const email=document.getElementById("email").value
+const password=document.getElementById("password").value
+
+const {data,error}=await supabase
+.from("users")
+.select("*")
+.eq("email",email)
+.eq("password",password)
+.single()
+
+if(error||!data){
+showMessage("Invalid credentials","#991b1b")
+return
+}
+
+localStorage.setItem("userName",data.name)
+localStorage.setItem("userEmail",data.email)
+localStorage.setItem("userProgram",data.program)
+
+showMessage("Login successful","#16a34a")
+
+setTimeout(()=>{
+window.location.href="visitorlog.html"
+},1000)
+}
+
+document.getElementById("adminLoginForm").onsubmit=(e)=>{
+e.preventDefault()
+
+const user=document.getElementById("adminUser").value
+const pass=document.getElementById("adminPass").value
+
+if(user==="admin"&&pass==="admin123"){
+showMessage("Access granted","#16a34a")
+setTimeout(()=>{
+window.location.href="admindashboard.html"
+},1000)
+}else{
+showMessage("Invalid admin","#991b1b")
+}
+}
     </script>
   </body>
 </html>
