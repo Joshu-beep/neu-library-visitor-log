@@ -111,6 +111,7 @@
       .badge-admin { background: #faf5ff; color: #a855f7; }
       .badge-inside { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; font-weight: 500; }
       .badge-checkout { background: #f1f5f9; color: #64748b; font-weight: 500; }
+      .badge-logged-out { background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; font-weight: 500; }
 
       .action-flex { display: flex; align-items: center; gap: 16px; }
       .action-text-btn { color: var(--danger-red); font-size: 13px; cursor: pointer; background: none; border: none; font-weight: 500; }
@@ -348,8 +349,8 @@
           const dt = new Date(log.time_in);
           const dateStr = dt.toLocaleDateString("en-PH", { timeZone: "Asia/Manila", year: "numeric", month: "short", day: "numeric" });
           const timeStr = dt.toLocaleTimeString("en-PH", { timeZone: "Asia/Manila", hour: "2-digit", minute: "2-digit" });
-          const statusClass = log.status === "inside" ? "badge-inside" : "badge-checkout";
-          const statusLabel = log.status === "inside" ? "Inside" : "Checked Out";
+          const statusClass = log.status === "inside" ? "badge-inside" : log.status === "logged_out" ? "badge-logged-out" : "badge-checkout";
+          const statusLabel = log.status === "inside" ? "Inside" : log.status === "logged_out" ? "Logged Out" : "Checked Out";
 
           return `
             <tr data-log-id="${log.id}">
