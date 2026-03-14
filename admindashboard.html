@@ -308,14 +308,16 @@
         const weekAgoPH = new Date(todayPH.getTime() - 7 * 24 * 60 * 60 * 1000);
         const weekISO = new Date(weekAgoPH.getTime() - PH_OFFSET_MS).toISOString();
 
-        const [liveRes, todayRes, weekRes, totalRes] = await Promise.all([
-          supabase.from("visit_logs").select("*", { count: "exact", head: true }).eq("status", "inside"),
+        // Live occupancy: count distinct users whose LATEST log status is "inside"
+        const { data: liveData } = await supabase.rpc("get_live_occupancy");
+
+        const [todayRes, weekRes, totalRes] = await Promise.all([
           supabase.from("visit_logs").select("*", { count: "exact", head: true }).gte("time_in", todayISO),
           supabase.from("visit_logs").select("*", { count: "exact", head: true }).gte("time_in", weekISO),
           supabase.from("users").select("*", { count: "exact", head: true })
         ]);
 
-        document.getElementById("live-stat").textContent = liveRes.count ?? 0;
+        document.getElementById("live-stat").textContent = liveData ?? 0;
         document.getElementById("today-stat").textContent = todayRes.count ?? 0;
         document.getElementById("week-stat").textContent = weekRes.count ?? 0;
         document.getElementById("total-stat").textContent = totalRes.count ?? 0;
