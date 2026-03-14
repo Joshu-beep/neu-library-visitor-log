@@ -325,14 +325,34 @@
       // ── LOG OUT button ──
       document.getElementById("logoutBtn").addEventListener("click", async () => {
         const logId = localStorage.getItem("currentLogId");
+        const timeOut = new Date().toISOString();
+        let updateError = null;
 
-        // Update the visit log status to logged_out
         if (logId) {
-          await supabase
+          const { error } = await supabase
             .from("visit_logs")
-            .update({ status: "logged_out" })
+            .update({ status: "logged_out", time_out: timeOut })
             .eq("id", logId);
+          updateError = error;
+        } else {
+          const { data: latestLog } = await supabase
+            .from("visit_logs")
+            .select("id")
+            .eq("user_id", userId)
+            .eq("status", "inside")
+            .order("time_in", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (latestLog) {
+            const { error } = await supabase
+              .from("visit_logs")
+              .update({ status: "logged_out", time_out: timeOut })
+              .eq("id", latestLog.id);
+            updateError = error;
+          }
         }
+
+        if (updateError) console.error("Status update failed:", updateError.message);
 
         await supabase.auth.signOut();
         localStorage.clear();
