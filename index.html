@@ -641,11 +641,25 @@
             return;
           }
 
-          // 7. Success
+          // 7. Sign in properly to establish a clean session before redirecting
+          btn.textContent = "Signing in...";
+          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+
+          if (signInError) {
+            // Still registered successfully — just send them to login page
+            showMessage("Registered! Please sign in with your new account.", "#16a34a");
+            setTimeout(() => {
+              registerView.style.display = "none";
+              loginView.style.display = "flex";
+            }, 1500);
+            return;
+          }
+
+          // 8. Save to localStorage and redirect
           localStorage.setItem("userName", name);
           localStorage.setItem("userEmail", email);
           localStorage.setItem("userProgram", program);
-          localStorage.setItem("userId", data.user.id);
+          localStorage.setItem("userId", signInData.user.id);
 
           showMessage("Registration successful!", "#16a34a");
           setTimeout(() => { window.location.href = "visitorlog.html"; }, 1000);
