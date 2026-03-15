@@ -128,6 +128,14 @@
       </div>
       <div class="nav-right">
         <span class="welcome-text">Welcome, System Admin</span>
+        <a href="qrscan.html" onclick="sessionStorage.setItem('adminQR','1')" style="display:flex;align-items:center;gap:6px;background:#f59e0b;color:#001f54;padding:6px 14px;border-radius:6px;font-weight:700;font-size:13px;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+            <path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"></path>
+          </svg>
+          QR Scanner
+        </a>
         <button class="logout-btn" onclick="logout()">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -579,12 +587,49 @@
       window.triggerResetAll = triggerResetAll; window.toggleBlock = toggleBlock; window.removeUser = removeUser;
       window.exportCSV = exportCSV; window.exportPDF = exportPDF; window.logout = logout;
 
-      // ── Init — run each independently so one failure doesn't block others ──
+      // ── Init ──
       autoLogoutMidnight().catch(e => console.warn('autoLogout:', e));
       loadStats().catch(e => console.error('loadStats:', e));
       loadInsideNow().catch(e => console.error('loadInsideNow:', e));
       loadChart().catch(e => console.error('loadChart:', e));
       loadLogs().catch(e => console.error('loadLogs:', e));
+
+      // ── Real-time auto-update ──
+      // Subscribe to visit_logs changes — fires instantly when anyone checks in or out
+      supabase
+        .channel('visit_logs_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'visit_logs' }, () => {
+          loadStats().catch(() => {});
+          loadInsideNow().catch(() => {});
+          loadLogs().catch(() => {});
+          loadChart().catch(() => {});
+        })
+        .subscribe();
+
+      // Subscribe to users table changes — fires when a new user registers or is blocked/deleted
+      supabase
+        .channel('users_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => {
+          loadStats().catch(() => {});
+          // If Manage Users tab is active, reload it too
+          if (document.getElementById('users-view') && !document.getElementById('users-view').classList.contains('hidden')) {
+            loadUsers().catch(() => {});
+          }
+        })
+        .subscribe();
+
+      // ── Fallback polling every 30 seconds ──
+      // Catches any changes that Realtime might miss (e.g. if websocket drops)
+      setInterval(() => {
+        loadStats().catch(() => {});
+        loadInsideNow().catch(() => {});
+      }, 30000);
+
+      // Poll logs and chart every 2 minutes
+      setInterval(() => {
+        loadLogs().catch(() => {});
+        loadChart().catch(() => {});
+      }, 120000);
     </script>
   </body>
 </html>
