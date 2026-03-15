@@ -23,7 +23,7 @@ body { display: flex; flex-direction: column; }
   color: #fff; flex-shrink: 0; z-index: 10; width: 100%;
 }
 .nav-left { display: flex; align-items: center; gap: 12px; }
-.nav-logo { width: 28px; height: 28px; object-fit: contain; border-radius: 4px; }
+.nav-logo { width: 24px; height: 24px; object-fit: contain; border-radius: 4px; }
 .nav-title { font-size: 20px; font-weight: 700; }
 .nav-clock { font-size: 14px; opacity: 0.85; font-variant-numeric: tabular-nums; }
 
@@ -42,15 +42,15 @@ body { display: flex; flex-direction: column; }
   color: white; display: flex; align-items: center; gap: 12px; flex-shrink: 0;
 }
 .avatar {
-  width: 46px; height: 46px; border-radius: 50%;
+  width: 54px; height: 54px; border-radius: 50%;
   background: rgba(255,255,255,0.2); border: 2px solid var(--gold);
   display: flex; align-items: center; justify-content: center;
-  font-size: 19px; font-weight: 700; flex-shrink: 0;
+  font-size: 22px; font-weight: 700; flex-shrink: 0;
 }
 .profile-info { min-width: 0; }
 .profile-greeting { font-size: 11px; opacity: 0.7; margin-bottom: 2px; }
-.profile-name { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.profile-email { font-size: 10px; opacity: 0.65; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profile-name { font-size: 17px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profile-email { font-size: 11px; opacity: 0.65; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .profile-badge { display: inline-block; background: var(--gold); color: #001f54; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 10px; }
 
 .session-card {
@@ -74,7 +74,7 @@ body { display: flex; flex-direction: column; }
 .notice-card { display: none; }
 
 .history-card {
-  background: white; border-radius: 12px; padding: 14px 16px;
+  background: white; border-radius: 12px; padding: 18px 20px;
   flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column;
   border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
@@ -119,13 +119,13 @@ body { display: flex; flex-direction: column; }
 
 .reason-grid {
   display: grid; grid-template-columns: 1fr 1fr;
-  gap: 12px; margin-bottom: 14px;
+  gap: 10px; margin-bottom: 12px;
 }
 .reason-option {
-  border: 1.5px solid var(--border); border-radius: 12px; height: 120px;
+  border: 1.5px solid var(--border); border-radius: 10px; height: 95px;
   cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 8px; background: #fff;
-  padding: 10px;
+  align-items: center; justify-content: center; gap: 6px; background: #fff;
+  padding: 8px;
 }
 .reason-option:hover { border-color: #94a3b8; background: #f8fafc; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
 .reason-option.selected { border-color: var(--blue); background: #eff4ff; box-shadow: 0 4px 16px rgba(0,31,84,0.12); }
@@ -135,7 +135,7 @@ body { display: flex; flex-direction: column; }
 .icon-researching svg { stroke: var(--indigo); }
 .icon-computer svg { stroke: var(--purple); }
 .icon-meeting svg { stroke: var(--green); }
-.reason-option .reason-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.reason-option .reason-name { font-size: 12px; font-weight: 600; color: var(--text); }
 .last-used-tag { font-size: 9px; background: #fef3c7; color: #92400e; padding: 2px 7px; border-radius: 10px; font-weight: 700; }
 
 .actions { padding: 0 24px 16px; display: flex; flex-direction: column; gap: 10px; }
