@@ -1,297 +1,191 @@
-:root {
-  --primary-blue: #001f54;
-  --accent-gold: #f59e0b;
-  --text-gray: #64748b;
-  --light-border: #cbd5e1;
-  --bg-fallback: #f4f6f9;
-  --admin-red: #991b1b;
+const loginView = document.getElementById("loginView");
+const registerView = document.getElementById("registerView");
+const adminView = document.getElementById("adminView");
+const mainHeader = document.getElementById("mainHeader");
+const headerSubtitle = document.getElementById("headerSubtitle");
+
+// Navigation
+document.getElementById("showRegisterBtn").onclick = () => {
+  loginView.style.display = "none";
+  registerView.style.display = "flex";
+};
+
+document.getElementById("showLoginLink").onclick = (e) => {
+  e.preventDefault();
+  registerView.style.display = "none";
+  loginView.style.display = "flex";
+};
+
+document.getElementById("adminBtn").onclick = (e) => {
+  e.preventDefault();
+  loginView.style.display = "none";
+  registerView.style.display = "none";
+  adminView.style.display = "flex";
+  mainHeader.classList.add("admin-mode");
+  headerSubtitle.textContent = "Admin Control Panel";
+  showMessage("Switching to Administrator Mode");
+};
+
+document.getElementById("backFromAdmin").onclick = (e) => {
+  e.preventDefault();
+  adminView.style.display = "none";
+  loginView.style.display = "flex";
+  mainHeader.classList.remove("admin-mode");
+  headerSubtitle.textContent = "Visitor Management System";
+};
+
+function showMessage(msg, color = "#001f54") {
+  const msgBox = document.getElementById("msgBox");
+  msgBox.textContent = msg;
+  msgBox.style.backgroundColor = color;
+  msgBox.style.display = "block";
+  setTimeout(() => {
+    msgBox.style.display = "none";
+  }, 3000);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
+// ── LOGIN with Supabase ──
+document.getElementById("loginForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("loginBtn");
+  btn.disabled = true;
+  btn.textContent = "Signing in...";
 
-body {
-  background-image: url("backgroundimg.jpg");
-  background-color: var(--bg-fallback);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  display: flex;
-  justify-content: flex-start;
-  align-items: stretch;
-  min-height: 100vh;
-  padding: 0;
-  overflow: hidden;
-}
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-.login-wrapper {
-  width: 100%;
-  max-width: 480px;
-  display: flex;
-  flex-direction: column;
-  background: #ffffff;
-  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-  min-height: 100vh;
-  overflow-y: auto;
-}
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-@media (max-width: 800px) {
-  .login-wrapper {
-    max-width: 100%;
-    box-shadow: none;
+  if (error) {
+    const msg = error.message.toLowerCase();
+    if (
+      msg.includes("invalid login credentials") ||
+      msg.includes("user not found") ||
+      msg.includes("no user found")
+    ) {
+      showMessage(
+        "You don't have an account yet. Please register first.",
+        "#991b1b",
+      );
+    } else if (
+      msg.includes("invalid password") ||
+      msg.includes("wrong password")
+    ) {
+      showMessage("Incorrect password. Please try again.", "#991b1b");
+    } else {
+      showMessage(error.message, "#991b1b");
+    }
+    btn.disabled = false;
+    btn.textContent = "Sign In";
+    return;
   }
-  body {
-    overflow: auto;
+
+  // Fetch user profile from users table
+  const { data: profile, error: profileError } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", data.user.id)
+    .single();
+
+  if (profileError || !profile) {
+    showMessage("Could not load user profile.", "#991b1b");
+    btn.disabled = false;
+    btn.textContent = "Sign In";
+    return;
   }
-}
 
-.login-card {
-  background: transparent;
-  width: 100%;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
+  // Store in localStorage for visitorlog.html
+  localStorage.setItem("userName", profile.name);
+  localStorage.setItem("userEmail", profile.email);
+  localStorage.setItem("userProgram", profile.program);
+  localStorage.setItem("userId", profile.id);
 
-.card-header {
-  background-color: var(--primary-blue);
-  color: #ffffff;
-  text-align: center;
-  padding: 30px 20px 25px;
-  border-bottom: 4px solid var(--accent-gold);
-  transition: background-color 0.3s ease;
-}
+  showMessage("Login successful!");
+  setTimeout(() => {
+    window.location.href = "visitorlog.html";
+  }, 1000);
+};
 
-.card-header.admin-mode {
-  background-color: var(--admin-red);
-}
+// ── REGISTER with Supabase ──
+document.getElementById("registerForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("registerBtn");
+  btn.disabled = true;
+  btn.textContent = "Creating account...";
 
-.icon-container {
-  margin-bottom: 12px;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  width: 64px;
-  height: 64px;
-  border: 2px solid var(--accent-gold);
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: white;
-}
+  const email = document.getElementById("regEmail").value;
+  const password = document.getElementById("regPassword").value;
+  const name = document.getElementById("regName").value;
+  const program = document.getElementById("regProgram").value;
+  const role = document.querySelector(".role-card.active").dataset.role;
 
-.logo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 8px;
-}
-.card-header h1 {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 6px;
-  letter-spacing: 0.5px;
-}
-.card-header h2 {
-  font-size: 12px;
-  color: var(--accent-gold);
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
+  // Create auth user
+  const { data, error } = await supabase.auth.signUp({ email, password });
 
-.card-body {
-  padding: 30px 40px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.input-group {
-  margin-bottom: 20px;
-}
-.input-row {
-  display: flex;
-  gap: 15px;
-}
-.input-row .input-group {
-  flex: 1;
-}
-
-.input-group label {
-  display: block;
-  text-align: center;
-  font-size: 14px;
-  color: var(--text-gray);
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-
-.input-group input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid var(--light-border);
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s;
-  text-align: center;
-}
-
-.text-left label {
-  text-align: left;
-}
-.text-left input {
-  text-align: left;
-}
-.input-group input:focus {
-  border-color: var(--primary-blue);
-}
-
-.btn {
-  width: 100%;
-  padding: 14px;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  outline: none;
-}
-.btn:active {
-  transform: scale(0.98);
-}
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-primary {
-  background-color: var(--primary-blue);
-  color: #ffffff;
-  border: none;
-  margin-top: 5px;
-}
-.btn-admin {
-  background-color: var(--admin-red);
-  color: #ffffff;
-  border: none;
-}
-
-.divider-container {
-  text-align: center;
-  margin: 24px 0 20px;
-  position: relative;
-}
-.divider-container::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background-color: #f1f5f9;
-  z-index: 1;
-}
-.divider-container p {
-  font-size: 13px;
-  color: #94a3b8;
-  background-color: #ffffff;
-  padding: 0 10px;
-  display: inline-block;
-  position: relative;
-  z-index: 2;
-}
-
-.btn-secondary {
-  background-color: #ffffff;
-  color: var(--primary-blue);
-  border: 1.5px solid var(--primary-blue);
-}
-
-.footer-links {
-  text-align: center;
-  color: #94a3b8;
-  font-size: 13px;
-  background-color: #f8fafc;
-  padding: 20px;
-  border-top: 1px solid var(--light-border);
-  margin-top: auto;
-}
-
-.admin-link {
-  display: inline-flex;
-  align-items: center;
-  color: #64748b;
-  text-decoration: none;
-  margin-bottom: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.admin-link:hover {
-  color: var(--primary-blue);
-}
-.admin-link svg {
-  width: 16px;
-  height: 16px;
-  margin-right: 6px;
-  stroke: currentColor;
-}
-
-.role-selector {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 24px;
-}
-.role-card {
-  flex: 1;
-  border: 1px solid var(--light-border);
-  border-radius: 8px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--text-gray);
-}
-.role-card.active {
-  border-color: var(--primary-blue);
-  color: var(--primary-blue);
-  background-color: #f8fafc;
-}
-
-#msgBox {
-  display: none;
-  position: fixed;
-  top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: var(--primary-blue);
-  color: white;
-  padding: 16px 24px;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  font-size: 15px;
-  text-align: center;
-  min-width: 250px;
-  animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-  from {
-    top: -50px;
-    opacity: 0;
+  if (error) {
+    showMessage(error.message, "#991b1b");
+    btn.disabled = false;
+    btn.textContent = "Complete Registration";
+    return;
   }
-  to {
-    top: 24px;
-    opacity: 1;
+
+  // Insert profile into users table
+  const { error: insertError } = await supabase.from("users").insert({
+    id: data.user.id,
+    email,
+    name,
+    program,
+    role,
+  });
+
+  if (insertError) {
+    showMessage(
+      "Account created but profile save failed: " + insertError.message,
+      "#991b1b",
+    );
+    btn.disabled = false;
+    btn.textContent = "Complete Registration";
+    return;
   }
-}
+
+  localStorage.setItem("userName", name);
+  localStorage.setItem("userEmail", email);
+  localStorage.setItem("userProgram", program);
+  localStorage.setItem("userId", data.user.id);
+
+  showMessage("Registration successful!");
+  setTimeout(() => {
+    window.location.href = "visitorlog.html";
+  }, 1000);
+};
+
+// ── ADMIN LOGIN (hardcoded credentials — keep as is or move to env) ──
+document.getElementById("adminLoginForm").onsubmit = (e) => {
+  e.preventDefault();
+  const user = document.getElementById("adminUser").value;
+  const pass = document.getElementById("adminPass").value;
+
+  if (user === "admin" && pass === "admin123") {
+    showMessage("Access Granted. Redirecting to Database...", "#16a34a");
+    setTimeout(() => {
+      window.location.href = "admindashboard.html";
+    }, 1500);
+  } else {
+    showMessage("Invalid Admin Credentials!", "#991b1b");
+  }
+};
+
+// Role Selection
+document.querySelectorAll(".role-card").forEach((card) => {
+  card.onclick = () => {
+    document
+      .querySelectorAll(".role-card")
+      .forEach((c) => c.classList.remove("active"));
+    card.classList.add("active");
+    document.getElementById("regProgram").placeholder =
+      card.dataset.role === "student" ? "BSIT" : "Faculty Dept";
+  };
+});
