@@ -80,11 +80,26 @@
 
       .avatar {
         width: 56px; height: 56px;
-        background-color: #e2e8f0; border-radius: 50%;
+        background-color: var(--primary-blue); border-radius: 50%;
         display: flex; justify-content: center; align-items: center;
-        color: var(--primary-blue);
+        color: white; font-size: 22px; font-weight: 700;
       }
-      .avatar svg { width: 28px; height: 28px; stroke: currentColor; }
+
+      .live-clock {
+        font-size: 12px; color: var(--text-gray);
+        background: #f1f5f9; border-radius: 6px;
+        padding: 3px 10px; display: inline-block; margin-top: 4px;
+        letter-spacing: 0.3px;
+      }
+
+      .already-inside {
+        display: none; margin: 0 32px 24px;
+        background: #f0fdf4; border: 1.5px solid #bbf7d0;
+        border-radius: 10px; padding: 14px 18px;
+        text-align: center;
+      }
+      .already-inside p { font-size: 14px; color: #16a34a; font-weight: 600; margin-bottom: 4px; }
+      .already-inside span { font-size: 12px; color: #4ade80; }
 
       .user-details h3 { font-size: 18px; color: var(--text-dark); font-weight: 700; margin-bottom: 2px; }
       .user-details p { font-size: 13px; color: var(--text-gray); margin-bottom: 6px; }
@@ -196,17 +211,20 @@
     <main class="main-content">
       <div class="log-card">
         <div class="user-profile">
-          <div class="avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </div>
+          <div class="avatar" id="userAvatar">?</div>
           <div class="user-details">
+            <p id="userGreeting" style="font-size:13px;color:var(--text-gray);margin-bottom:2px;"></p>
             <h3 id="displayUserName">Loading...</h3>
             <p id="displayUserEmail">—</p>
             <span class="badge" id="displayUserProgram">—</span>
+            <div><span class="live-clock" id="liveClock">—</span></div>
           </div>
+        </div>
+
+        <!-- Already checked in today banner -->
+        <div class="already-inside" id="alreadyInsideBanner">
+          <p>✓ You are currently logged in to the library</p>
+          <span id="checkedInSince">Checked in at —</span>
         </div>
 
         <div class="card-body">
@@ -272,23 +290,84 @@
       const userId = localStorage.getItem("userId");
       if (!userId) { window.location.href = "index.html"; }
 
-      const userName = localStorage.getItem("userName") || "Guest";
-      const userEmail = localStorage.getItem("userEmail") || "—";
+      const userName    = localStorage.getItem("userName")    || "Guest";
+      const userEmail   = localStorage.getItem("userEmail")   || "—";
       const userProgram = localStorage.getItem("userProgram") || "—";
 
       const reasonOptions = document.querySelectorAll(".reason-option");
-      const submitLogBtn = document.getElementById("submitLogBtn");
-      const welcomeModal = document.getElementById("welcomeModal");
-      const countdownEl = document.getElementById("countdown");
-      let selectedReason = null;
+      const submitLogBtn  = document.getElementById("submitLogBtn");
+      const welcomeModal  = document.getElementById("welcomeModal");
+      const countdownEl   = document.getElementById("countdown");
+      let selectedReason  = null;
+      let alreadyLoggedId = null; // existing "inside" log if any
 
-      // Load user details
-      document.getElementById("displayUserName").textContent = userName;
-      document.getElementById("displayUserEmail").textContent = userEmail;
+      // ── Load user details ──
+      document.getElementById("displayUserName").textContent    = userName;
+      document.getElementById("displayUserEmail").textContent   = userEmail;
       document.getElementById("displayUserProgram").textContent = userProgram;
 
-      // ── Generate QR Code ──
-      // QR encodes a JSON payload with userId — qrscan.html decodes this
+      // Avatar initial
+      document.getElementById("userAvatar").textContent = userName.charAt(0).toUpperCase();
+
+      // ── Greeting based on PH time ──
+      const phHour = new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", hour: "numeric", hour12: false });
+      const hour = parseInt(phHour);
+      const greeting = hour < 12 ? "Good morning," : hour < 17 ? "Good afternoon," : "Good evening,";
+      document.getElementById("userGreeting").textContent = greeting;
+
+      // ── Live clock in PH time ──
+      function updateClock() {
+        const now = new Date().toLocaleString("en-PH", {
+          timeZone: "Asia/Manila",
+          weekday: "short", month: "short", day: "numeric",
+          hour: "2-digit", minute: "2-digit", second: "2-digit"
+        });
+        document.getElementById("liveClock").textContent = now;
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      // ── Check if already inside today ──
+      async function checkAlreadyInside() {
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        const { data } = await supabase
+          .from("visit_logs")
+          .select("id, time_in, reason")
+          .eq("user_id", userId)
+          .eq("status", "inside")
+          .gte("time_in", todayStart.toISOString())
+          .order("time_in", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (data) {
+          alreadyLoggedId = data.id;
+          localStorage.setItem("currentLogId", data.id);
+
+          // Show banner
+          const banner = document.getElementById("alreadyInsideBanner");
+          banner.style.display = "block";
+          const timeIn = new Date(data.time_in).toLocaleTimeString("en-PH", {
+            timeZone: "Asia/Manila", hour: "2-digit", minute: "2-digit"
+          });
+          document.getElementById("checkedInSince").textContent =
+            `Checked in at ${timeIn} for "${data.reason}"`;
+
+          // Disable the Log Visit form — already inside
+          submitLogBtn.disabled = true;
+          submitLogBtn.textContent = "Already checked in";
+          submitLogBtn.style.background = "#94a3b8";
+          reasonOptions.forEach(opt => {
+            opt.style.pointerEvents = "none";
+            opt.style.opacity = "0.5";
+          });
+        }
+      }
+      checkAlreadyInside();
+
+      // ── QR Code ──
       function generateQR(containerId, size) {
         const container = document.getElementById(containerId);
         container.innerHTML = "";
@@ -301,17 +380,17 @@
         });
       }
 
-      // My QR Code button
       document.getElementById("showQrBtn").addEventListener("click", () => {
         generateQR("qrModalCanvas", 180);
-        document.getElementById("qrModalName").textContent = userName;
+        document.getElementById("qrModalName").textContent    = userName;
         document.getElementById("qrModalProgram").textContent = userProgram;
         document.getElementById("qrModal").style.display = "flex";
       });
 
-      // Handle reason selection
+      // ── Reason selection ──
       reasonOptions.forEach((option) => {
         option.addEventListener("click", () => {
+          if (alreadyLoggedId) return; // block if already inside
           reasonOptions.forEach((opt) => opt.classList.remove("selected"));
           option.classList.add("selected");
           selectedReason = option.getAttribute("data-reason");
@@ -326,34 +405,33 @@
         setTimeout(() => { msgBox.style.display = "none"; }, 3000);
       }
 
-      // ── SUBMIT VISIT LOG to Supabase ──
+      // ── SUBMIT VISIT LOG ──
       submitLogBtn.addEventListener("click", async () => {
-        if (!selectedReason) return;
+        if (!selectedReason || alreadyLoggedId) return;
 
+        // Prevent double submit
         submitLogBtn.disabled = true;
         submitLogBtn.textContent = "Logging visit...";
+        reasonOptions.forEach(opt => { opt.style.pointerEvents = "none"; });
 
-        // Always store as UTC — admindashboard converts to PH time on display
         const timeIn = new Date().toISOString();
 
-        const { data: logData, error } = await supabase.from("visit_logs").insert({
-          user_id: userId,
-          reason: selectedReason,
-          status: "inside",
-          time_in: timeIn
-        }).select("id").single();
+        const { data: logData, error } = await supabase
+          .from("visit_logs")
+          .insert({ user_id: userId, reason: selectedReason, status: "inside", time_in: timeIn })
+          .select("id")
+          .single();
 
         if (error) {
           showMessage("Failed to log visit: " + error.message);
           submitLogBtn.disabled = false;
           submitLogBtn.textContent = "Log Visit";
+          reasonOptions.forEach(opt => { opt.style.pointerEvents = ""; });
           return;
         }
 
-        // Save the log ID so the logout button can update its status
         if (logData?.id) localStorage.setItem("currentLogId", logData.id);
 
-        // Show welcome modal with QR and countdown
         generateQR("qrContainer", 160);
         welcomeModal.classList.add("active");
         let timeLeft = 3;
@@ -364,7 +442,6 @@
           countdownEl.textContent = timeLeft;
           if (timeLeft <= 0) {
             clearInterval(timer);
-            // Auto-logout does NOT update status — user is still "inside"
             localStorage.removeItem("currentLogId");
             localStorage.clear();
             window.location.href = "index.html";
@@ -372,9 +449,9 @@
         }, 1000);
       });
 
-      // ── LOG OUT button ──
+      // ── LOG OUT ──
       document.getElementById("logoutBtn").addEventListener("click", async () => {
-        const logId = localStorage.getItem("currentLogId");
+        const logId  = localStorage.getItem("currentLogId");
         const timeOut = new Date().toISOString();
         let updateError = null;
 
