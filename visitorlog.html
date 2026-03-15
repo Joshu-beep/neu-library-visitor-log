@@ -562,12 +562,102 @@
       });
 
       document.getElementById("downloadQrBtn").addEventListener("click", () => {
-        const canvas = document.querySelector("#qrModalCanvas canvas");
-        const img    = document.querySelector("#qrModalCanvas img");
-        const src    = canvas ? canvas.toDataURL("image/png") : img?.src;
-        if (!src) return;
-        const a = document.createElement("a");
-        a.href = src; a.download = `NEU_QR_${userName.replace(/\s+/g,"_")}.png`; a.click();
+        // Get the QR image source
+        const qrCanvas = document.querySelector("#qrModalCanvas canvas");
+        const qrImg    = document.querySelector("#qrModalCanvas img");
+        const qrSrc    = qrCanvas ? qrCanvas.toDataURL("image/png") : qrImg?.src;
+        if (!qrSrc) return;
+
+        // Build a full card on an offscreen canvas matching the QR modal design
+        const W = 400, H = 520;
+        const offscreen = document.createElement("canvas");
+        offscreen.width  = W * 2; // 2x for retina
+        offscreen.height = H * 2;
+        const ctx = offscreen.getContext("2d");
+        ctx.scale(2, 2);
+
+        // White background with rounded corners
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.roundRect(0, 0, W, H, 20);
+        ctx.fill();
+
+        // Navy header bar
+        ctx.fillStyle = "#001f54";
+        ctx.beginPath();
+        ctx.roundRect(0, 0, W, 70, [20, 20, 0, 0]);
+        ctx.fill();
+
+        // Gold accent line
+        ctx.fillStyle = "#f59e0b";
+        ctx.fillRect(0, 68, W, 4);
+
+        // Header text
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 18px 'Segoe UI', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Your Library QR Code", W / 2, 32);
+        ctx.font = "13px 'Segoe UI', sans-serif";
+        ctx.fillStyle = "rgba(255,255,255,0.75)";
+        ctx.fillText("NEU Library Visitor Management System", W / 2, 54);
+
+        // Draw QR inside a rounded white card with border
+        const qrSize = 220;
+        const qrX = (W - qrSize) / 2;
+        const qrY = 90;
+        const pad = 14;
+
+        ctx.fillStyle = "#f8fafc";
+        ctx.strokeStyle = "#e2e8f0";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(qrX - pad, qrY - pad, qrSize + pad * 2, qrSize + pad * 2, 14);
+        ctx.fill();
+        ctx.stroke();
+
+        const drawCard = () => {
+          const img = new Image();
+          img.onload = () => {
+            ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+
+            // Divider
+            ctx.strokeStyle = "#e2e8f0";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(40, qrY + qrSize + pad + 20);
+            ctx.lineTo(W - 40, qrY + qrSize + pad + 20);
+            ctx.stroke();
+
+            // Name
+            ctx.fillStyle = "#001f54";
+            ctx.font = "bold 20px 'Segoe UI', sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(userName, W / 2, qrY + qrSize + pad + 48);
+
+            // Program
+            ctx.fillStyle = "#64748b";
+            ctx.font = "14px 'Segoe UI', sans-serif";
+            ctx.fillText(userProgram, W / 2, qrY + qrSize + pad + 70);
+
+            // Footer
+            ctx.fillStyle = "#001f54";
+            ctx.beginPath();
+            ctx.roundRect(30, H - 66, W - 60, 42, 10);
+            ctx.fill();
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 14px 'Segoe UI', sans-serif";
+            ctx.fillText("New Era University Library", W / 2, H - 40);
+
+            // Download
+            const a = document.createElement("a");
+            a.href = offscreen.toDataURL("image/png");
+            a.download = `NEU_QR_${userName.replace(/\s+/g, "_")}.png`;
+            a.click();
+          };
+          img.src = qrSrc;
+        };
+        drawCard();
       });
 
       // ── Reason selection ──
