@@ -4,33 +4,79 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NEU Admin Dashboard</title>
-    <link rel="icon" type="image/x-icon" href="img/neulogo.png" />
+    <link rel="icon" type="image/x-icon" href="neulogo.png" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <link rel="stylesheet" href="css/admindashboard.css" />
+    <link rel="Stylesheet" href="css/admindashboard.css" />
   </head>
   <body>
     <div id="toast">Message</div>
 
     <nav class="navbar">
-      <div id="toast">Message</div>
- 
-    <nav class="navbar">
       <div class="nav-logo">
-        <img src="img/neulogo.png" alt="NEU Logo" style="width:32px;height:32px;object-fit:contain;border-radius:50%;background:white;padding:2px;" onerror="this.style.display='none'" />
+        <img
+          src="neulogo.png"
+          alt="NEU Logo"
+          style="
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: white;
+            padding: 2px;
+          "
+          onerror="this.style.display = 'none'"
+        />
         NEU Admin Dashboard
       </div>
       <div class="nav-right">
         <span class="welcome-text">Welcome, System Admin</span>
-        <a href="qrscan.html" onclick="sessionStorage.setItem('adminQR','1')" style="display:flex;align-items:center;gap:6px;background:#f59e0b;color:#001f54;padding:6px 14px;border-radius:6px;font-weight:700;font-size:13px;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect>
+        <a
+          href="qrscan.html"
+          onclick="sessionStorage.setItem('adminQR', '1')"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f59e0b;
+            color: #001f54;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            text-decoration: none;
+            transition: all 0.2s;
+          "
+          onmouseover="this.style.background = '#d97706'"
+          onmouseout="this.style.background = '#f59e0b'"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
             <rect x="3" y="14" width="7" height="7"></rect>
             <path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"></path>
           </svg>
           QR Scanner
         </a>
         <button class="logout-btn" onclick="logout()">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12"></line>
@@ -39,45 +85,88 @@
         </button>
       </div>
     </nav>
- 
+
     <div class="container">
- 
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon icon-red">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
           </div>
-          <div class="stat-info"><h3>Live Occupancy</h3><p id="live-stat">—</p></div>
+          <div class="stat-info">
+            <h3>Live Occupancy</h3>
+            <p id="live-stat">—</p>
+          </div>
         </div>
         <div class="stat-card">
           <div class="stat-icon icon-blue">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
             </svg>
           </div>
-          <div class="stat-info"><h3>Visits Today</h3><p id="today-stat">—</p></div>
+          <div class="stat-info">
+            <h3>Visits Today</h3>
+            <p id="today-stat">—</p>
+          </div>
         </div>
         <div class="stat-card">
           <div class="stat-icon icon-green">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
             </svg>
           </div>
-          <div class="stat-info"><h3>This Week</h3><p id="week-stat">—</p></div>
+          <div class="stat-info">
+            <h3>This Week</h3>
+            <p id="week-stat">—</p>
+          </div>
         </div>
         <div class="stat-card">
           <div class="stat-icon icon-orange">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
             </svg>
           </div>
-          <div class="stat-info"><h3>Total Registered</h3><p id="total-stat">—</p></div>
+          <div class="stat-info">
+            <h3>Total Registered</h3>
+            <p id="total-stat">—</p>
+          </div>
         </div>
       </div>
- 
+
       <div class="dashboard-row">
         <div class="panel">
           <div class="panel-header">
@@ -88,66 +177,137 @@
             <div class="chart-container"><canvas id="visitChart"></canvas></div>
           </div>
         </div>
- 
+
         <div class="panel">
           <div class="panel-header">
             <h3>Currently Inside</h3>
             <span id="inside-count">0 people</span>
           </div>
-          <div style="max-height:280px;overflow-y:auto;">
+          <div style="max-height: 280px; overflow-y: auto">
             <table class="inside-table">
               <thead>
-                <tr><th>Name</th><th>Program</th><th>Time In</th></tr>
+                <tr>
+                  <th>Name</th>
+                  <th>Program</th>
+                  <th>Time In</th>
+                </tr>
               </thead>
               <tbody id="insideTableBody">
-                <tr><td colspan="3" style="text-align:center;padding:30px;color:var(--text-muted)">No one inside yet.</td></tr>
+                <tr>
+                  <td
+                    colspan="3"
+                    style="
+                      text-align: center;
+                      padding: 30px;
+                      color: var(--text-muted);
+                    "
+                  >
+                    No one inside yet.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
- 
+
       <div class="content-card">
         <div class="toolbar">
           <div class="tab-group">
-            <button class="tab active" onclick="changeView('log', this)">Visits Log</button>
-            <button class="tab" onclick="changeView('users', this)">Manage Users</button>
-            <button class="tab" onclick="changeView('notices', this)">Notices</button>
+            <button class="tab active" onclick="changeView('log', this)">
+              Visits Log
+            </button>
+            <button class="tab" onclick="changeView('users', this)">
+              Manage Users
+            </button>
+            <button class="tab" onclick="changeView('notices', this)">
+              Notices
+            </button>
           </div>
           <button class="btn-action btn-reset" onclick="triggerResetAll()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-              <line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+              ></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
             </svg>
             Reset DB
           </button>
           <div class="date-filter" id="dateFilterSection">
-            <input type="date" class="date-input" id="dateFrom" onchange="filterByDate()" />
+            <input
+              type="date"
+              class="date-input"
+              id="dateFrom"
+              onchange="filterByDate()"
+            />
             <span>to</span>
-            <input type="date" class="date-input" id="dateTo" onchange="filterByDate()" />
+            <input
+              type="date"
+              class="date-input"
+              id="dateTo"
+              onchange="filterByDate()"
+            />
           </div>
           <div class="search-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            <input type="text" id="filterInput" placeholder="Filter by keyword..." onkeyup="runFilter()" />
+            <input
+              type="text"
+              id="filterInput"
+              placeholder="Filter by keyword..."
+              onkeyup="runFilter()"
+            />
           </div>
           <button class="btn-action btn-export-csv" onclick="exportCSV()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+              ></path>
               <polyline points="14 2 14 8 20 8"></polyline>
             </svg>
             Export CSV
           </button>
           <button class="btn-action btn-export-pdf" onclick="exportPDF()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
             Export PDF
           </button>
         </div>
- 
+
         <div id="log-view">
           <table id="logTable">
             <thead>
@@ -161,82 +321,280 @@
               </tr>
             </thead>
             <tbody id="logTableBody">
-              <tr class="loading-row"><td colspan="6">Loading visit records...</td></tr>
+              <tr class="loading-row">
+                <td colspan="6">Loading visit records...</td>
+              </tr>
             </tbody>
           </table>
         </div>
- 
+
         <div id="users-view" class="hidden">
           <table id="usersTable">
             <thead>
-              <tr><th>Name</th><th>Email</th><th>Program</th><th>Role</th><th>Status</th><th>Actions</th></tr>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Program</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
             </thead>
             <tbody id="usersTableBody">
-              <tr class="loading-row"><td colspan="6">Loading user records...</td></tr>
+              <tr class="loading-row">
+                <td colspan="6">Loading user records...</td>
+              </tr>
             </tbody>
           </table>
         </div>
- 
+
         <!-- Notices Management View -->
-        <div id="notices-view" class="hidden" style="padding:24px;">
-          <h3 style="font-size:15px;font-weight:700;color:var(--text-dark);margin-bottom:4px;">Library Announcements &amp; Reminders</h3>
-          <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">These appear on the login page. Events are sorted by date.</p>
- 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
- 
+        <div id="notices-view" class="hidden" style="padding: 24px">
+          <h3
+            style="
+              font-size: 15px;
+              font-weight: 700;
+              color: var(--text-dark);
+              margin-bottom: 4px;
+            "
+          >
+            Library Announcements &amp; Reminders
+          </h3>
+          <p
+            style="
+              font-size: 13px;
+              color: var(--text-muted);
+              margin-bottom: 20px;
+            "
+          >
+            These appear on the login page. Events are sorted by date.
+          </p>
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 20px;
+              align-items: start;
+            "
+          >
             <!-- Announcements (Events with date) -->
             <div>
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#3b82f6;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                <span style="width:8px;height:8px;border-radius:50%;background:#3b82f6;display:inline-block;"></span>
+              <div
+                style="
+                  font-size: 12px;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                  color: #3b82f6;
+                  margin-bottom: 10px;
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+              >
+                <span
+                  style="
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: #3b82f6;
+                    display: inline-block;
+                  "
+                ></span>
                 Announcements / Events
-              </div>              <div style="background:#f8fafc;border:1px solid var(--border-color);border-radius:10px;padding:16px;margin-bottom:12px;">
-                <div style="display:flex;flex-direction:column;gap:10px;">
+              </div>
+              <div
+                style="
+                  background: #f8fafc;
+                  border: 1px solid var(--border-color);
+                  border-radius: 10px;
+                  padding: 16px;
+                  margin-bottom: 12px;
+                "
+              >
+                <div style="display: flex; flex-direction: column; gap: 10px">
                   <div>
-                    <label style="font-size:12px;font-weight:600;color:var(--text-dark);display:block;margin-bottom:4px;">Message</label>
-                    <textarea id="eventInput" placeholder="e.g. Book Fair 2026 — Visit our collection..." rows="2"
-                      style="width:100%;padding:8px 12px;border:1px solid var(--border-color);border-radius:8px;font-size:13px;resize:none;outline:none;font-family:inherit;"></textarea>
+                    <label
+                      style="
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: var(--text-dark);
+                        display: block;
+                        margin-bottom: 4px;
+                      "
+                      >Message</label
+                    >
+                    <textarea
+                      id="eventInput"
+                      placeholder="e.g. Book Fair 2026 — Visit our collection..."
+                      rows="2"
+                      style="
+                        width: 100%;
+                        padding: 8px 12px;
+                        border: 1px solid var(--border-color);
+                        border-radius: 8px;
+                        font-size: 13px;
+                        resize: none;
+                        outline: none;
+                        font-family: inherit;
+                      "
+                    ></textarea>
                   </div>
                   <div>
-                    <label style="font-size:12px;font-weight:600;color:var(--text-dark);display:block;margin-bottom:4px;">Event Date</label>
-                    <input type="date" id="eventDateInput"
-                      style="width:100%;padding:8px 12px;border:1px solid var(--border-color);border-radius:8px;font-size:13px;outline:none;" />
+                    <label
+                      style="
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: var(--text-dark);
+                        display: block;
+                        margin-bottom: 4px;
+                      "
+                      >Event Date</label
+                    >
+                    <input
+                      type="date"
+                      id="eventDateInput"
+                      style="
+                        width: 100%;
+                        padding: 8px 12px;
+                        border: 1px solid var(--border-color);
+                        border-radius: 8px;
+                        font-size: 13px;
+                        outline: none;
+                      "
+                    />
                   </div>
-                  <button onclick="addAnnouncement()"
-                    style="padding:9px 16px;background:#3b82f6;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;width:100%;">
+                  <button
+                    onclick="addAnnouncement()"
+                    style="
+                      padding: 9px 16px;
+                      background: #3b82f6;
+                      color: white;
+                      border: none;
+                      border-radius: 8px;
+                      font-size: 13px;
+                      font-weight: 700;
+                      cursor: pointer;
+                      width: 100%;
+                    "
+                  >
                     Post Announcement
                   </button>
                 </div>
               </div>
-              <div id="eventsAdminList"><div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">Loading...</div></div>
+              <div id="eventsAdminList">
+                <div
+                  style="
+                    text-align: center;
+                    padding: 20px;
+                    color: var(--text-muted);
+                    font-size: 13px;
+                  "
+                >
+                  Loading...
+                </div>
+              </div>
             </div>
- 
+
             <!-- Reminders (no date) -->
             <div>
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#f59e0b;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                <span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block;"></span>
+              <div
+                style="
+                  font-size: 12px;
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                  color: #f59e0b;
+                  margin-bottom: 10px;
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+              >
+                <span
+                  style="
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: #f59e0b;
+                    display: inline-block;
+                  "
+                ></span>
                 Reminders
               </div>
-              <div style="background:#f8fafc;border:1px solid var(--border-color);border-radius:10px;padding:16px;margin-bottom:12px;">
-                <div style="display:flex;flex-direction:column;gap:10px;">
+              <div
+                style="
+                  background: #f8fafc;
+                  border: 1px solid var(--border-color);
+                  border-radius: 10px;
+                  padding: 16px;
+                  margin-bottom: 12px;
+                "
+              >
+                <div style="display: flex; flex-direction: column; gap: 10px">
                   <div>
-                    <label style="font-size:12px;font-weight:600;color:var(--text-dark);display:block;margin-bottom:4px;">Message</label>
-                    <textarea id="reminderInput" placeholder="e.g. Please observe silence in reading areas..." rows="2"
-                      style="width:100%;padding:8px 12px;border:1px solid var(--border-color);border-radius:8px;font-size:13px;resize:none;outline:none;font-family:inherit;"></textarea>
+                    <label
+                      style="
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: var(--text-dark);
+                        display: block;
+                        margin-bottom: 4px;
+                      "
+                      >Message</label
+                    >
+                    <textarea
+                      id="reminderInput"
+                      placeholder="e.g. Please observe silence in reading areas..."
+                      rows="2"
+                      style="
+                        width: 100%;
+                        padding: 8px 12px;
+                        border: 1px solid var(--border-color);
+                        border-radius: 8px;
+                        font-size: 13px;
+                        resize: none;
+                        outline: none;
+                        font-family: inherit;
+                      "
+                    ></textarea>
                   </div>
-                  <button onclick="addReminder()"
-                    style="padding:9px 16px;background:#f59e0b;color:#001f54;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;width:100%;">
+                  <button
+                    onclick="addReminder()"
+                    style="
+                      padding: 9px 16px;
+                      background: #f59e0b;
+                      color: #001f54;
+                      border: none;
+                      border-radius: 8px;
+                      font-size: 13px;
+                      font-weight: 700;
+                      cursor: pointer;
+                      width: 100%;
+                    "
+                  >
                     Post Reminder
                   </button>
                 </div>
               </div>
-              <div id="remindersAdminList"><div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">Loading...</div></div>
+              <div id="remindersAdminList">
+                <div
+                  style="
+                    text-align: center;
+                    padding: 20px;
+                    color: var(--text-muted);
+                    font-size: 13px;
+                  "
+                >
+                  Loading...
+                </div>
+              </div>
             </div>
- 
           </div>
         </div>
       </div>
     </div>
-
     <script src="js/admindashboard.js" type="module"></script>
   </body>
 </html>
