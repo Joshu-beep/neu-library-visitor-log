@@ -19,164 +19,179 @@
         --icon-purple: #a855f7;
         --icon-green: #22c55e;
       }
-
       * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
-
-      body {
-        background-image: url("");
-        background-color: var(--bg-fallback);
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
+      body { background-color: var(--bg-fallback); display: flex; flex-direction: column; min-height: 100vh; }
 
       .navbar {
-        background-color: var(--primary-blue);
-        border-bottom: 4px solid var(--accent-gold);
-        padding: 12px 24px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: #ffffff;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        z-index: 10;
+        background-color: var(--primary-blue); border-bottom: 4px solid var(--accent-gold);
+        padding: 12px 24px; display: flex; justify-content: space-between; align-items: center;
+        color: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); z-index: 10;
       }
-
       .nav-left { display: flex; align-items: center; gap: 12px; }
-      .nav-logo { width: 32px; height: 32px; object-fit: contain; background-color: rgba(255,255,255,0.1); border-radius: 4px; }
-      .nav-title { font-size: 18px; font-weight: 600; letter-spacing: 0.5px; }
+      .nav-logo { width: 32px; height: 32px; object-fit: contain; border-radius: 4px; }
+      .nav-title { font-size: 18px; font-weight: 600; }
 
-      .btn-signout {
-        background: transparent; border: none; color: #ffffff; font-size: 14px;
-        font-weight: 500; display: flex; align-items: center; gap: 8px;
-        cursor: pointer; transition: opacity 0.2s;
-      }
-      .btn-signout:hover { opacity: 0.8; }
-      .btn-signout svg { width: 18px; height: 18px; stroke: currentColor; }
+      .main-content { flex: 1; display: flex; justify-content: center; align-items: flex-start; padding: 24px; gap: 20px; }
 
-      .main-content { flex: 1; display: flex; justify-content: center; align-items: center; padding: 24px; }
-
+      /* ── Main card ── */
       .log-card {
-        background-color: #ffffff;
-        border-radius: 16px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-        width: 100%;
-        max-width: 550px;
-        overflow: hidden;
+        background: #fff; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        width: 100%; max-width: 520px; overflow: hidden;
       }
 
+      /* ── User profile ── */
       .user-profile {
-        padding: 24px 32px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        border-bottom: 1px solid var(--light-border);
-        background-color: #fcfcfd;
+        padding: 20px 28px; display: flex; align-items: center; gap: 16px;
+        border-bottom: 1px solid var(--light-border); background: #fcfcfd;
       }
-
       .avatar {
-        width: 56px; height: 56px;
-        background-color: var(--primary-blue); border-radius: 50%;
+        width: 52px; height: 52px; background: var(--primary-blue); border-radius: 50%;
         display: flex; justify-content: center; align-items: center;
-        color: white; font-size: 22px; font-weight: 700;
+        color: white; font-size: 20px; font-weight: 700; flex-shrink: 0;
       }
+      .user-details h3 { font-size: 17px; color: var(--text-dark); font-weight: 700; margin-bottom: 1px; }
+      .user-details p { font-size: 12px; color: var(--text-gray); margin-bottom: 5px; }
+      .badge { display: inline-block; background: #e0e7ff; color: #3730a3; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 12px; }
+      .live-clock { font-size: 11px; color: var(--text-gray); background: #f1f5f9; border-radius: 5px; padding: 2px 8px; display: inline-block; margin-top: 3px; }
 
-      .live-clock {
-        font-size: 12px; color: var(--text-gray);
-        background: #f1f5f9; border-radius: 6px;
-        padding: 3px 10px; display: inline-block; margin-top: 4px;
-        letter-spacing: 0.3px;
+      /* ── Notice board ── */
+      .notice-board {
+        display: none; margin: 16px 28px 0;
+        background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 10px; padding: 12px 16px;
       }
+      .notice-board.show { display: block; }
+      .notice-title { font-size: 12px; font-weight: 700; color: #92400e; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+      .notice-item { font-size: 13px; color: #78350f; padding: 4px 0; border-bottom: 1px solid #fde68a; line-height: 1.4; }
+      .notice-item:last-child { border-bottom: none; padding-bottom: 0; }
 
+      /* ── Already inside banner ── */
       .already-inside {
-        display: none; margin: 0 32px 24px;
-        background: #f0fdf4; border: 1.5px solid #bbf7d0;
-        border-radius: 10px; padding: 14px 18px;
-        text-align: center;
+        display: none; margin: 16px 28px 0;
+        background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; padding: 12px 16px;
       }
-      .already-inside p { font-size: 14px; color: #16a34a; font-weight: 600; margin-bottom: 4px; }
-      .already-inside span { font-size: 12px; color: #4ade80; }
+      .already-inside.show { display: block; }
+      .already-inside p { font-size: 13px; color: #16a34a; font-weight: 600; margin-bottom: 2px; }
+      .already-inside .timer { font-size: 20px; font-weight: 700; color: #15803d; font-variant-numeric: tabular-nums; }
+      .already-inside .sub { font-size: 11px; color: #4ade80; margin-top: 2px; }
 
-      .user-details h3 { font-size: 18px; color: var(--text-dark); font-weight: 700; margin-bottom: 2px; }
-      .user-details p { font-size: 13px; color: var(--text-gray); margin-bottom: 6px; }
-
-      .badge {
-        display: inline-block; background-color: #e0e7ff; color: #3730a3;
-        font-size: 11px; font-weight: 700; padding: 4px 10px;
-        border-radius: 12px; letter-spacing: 0.5px;
+      /* ── Visit history ── */
+      .visit-history { margin: 16px 28px 0; }
+      .visit-history-title { font-size: 12px; font-weight: 700; color: var(--text-gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+      .history-item {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 8px 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 6px;
+        border: 1px solid var(--light-border);
       }
+      .history-left { display: flex; flex-direction: column; gap: 2px; }
+      .history-reason { font-size: 13px; font-weight: 600; color: var(--text-dark); }
+      .history-date { font-size: 11px; color: var(--text-gray); }
+      .history-duration { font-size: 11px; color: #94a3b8; background: #f1f5f9; padding: 2px 8px; border-radius: 20px; }
 
-      .card-body { padding: 32px; text-align: center; }
-      .card-body h4 { font-size: 16px; color: var(--text-dark); margin-bottom: 24px; font-weight: 600; }
+      /* ── Visit streak ── */
+      .streak-bar {
+        margin: 16px 28px 0; background: #fff7ed; border: 1.5px solid #fed7aa;
+        border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 12px;
+      }
+      .streak-icon { font-size: 20px; }
+      .streak-text strong { font-size: 14px; color: #c2410c; font-weight: 700; display: block; }
+      .streak-text span { font-size: 11px; color: #ea580c; }
 
-      .reason-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+      /* ── Card body ── */
+      .card-body { padding: 24px 28px; text-align: center; }
+      .card-body h4 { font-size: 15px; color: var(--text-dark); margin-bottom: 20px; font-weight: 600; }
 
+      .reason-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
       .reason-option {
-        border: 1.5px solid var(--light-border); border-radius: 12px; padding: 20px 10px;
-        cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column;
-        align-items: center; gap: 12px; background-color: #ffffff;
+        border: 1.5px solid var(--light-border); border-radius: 12px; padding: 16px 8px;
+        cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column;
+        align-items: center; gap: 10px; background: #fff;
       }
-      .reason-option:hover { border-color: #cbd5e1; background-color: #f8fafc; }
-      .reason-option.selected {
-        border-color: var(--primary-blue); background-color: #f0f4f8;
-        box-shadow: 0 4px 12px rgba(0,31,84,0.08);
-      }
-      .reason-option svg { width: 28px; height: 28px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+      .reason-option:hover { border-color: #cbd5e1; background: #f8fafc; }
+      .reason-option.selected { border-color: var(--primary-blue); background: #f0f4f8; box-shadow: 0 4px 12px rgba(0,31,84,0.08); }
+      .reason-option.last-used { border-color: var(--accent-gold); }
+      .reason-option svg { width: 26px; height: 26px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
       .icon-reading svg { stroke: var(--icon-orange); }
       .icon-researching svg { stroke: var(--icon-blue); }
       .icon-computer svg { stroke: var(--icon-purple); }
       .icon-meeting svg { stroke: var(--icon-green); }
-      .reason-option span { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+      .reason-option span { font-size: 13px; font-weight: 600; color: var(--text-dark); }
+      .last-used-tag { font-size: 9px; background: #fef3c7; color: #92400e; padding: 1px 6px; border-radius: 10px; font-weight: 700; }
 
       .btn-submit {
-        width: 100%; padding: 16px; border-radius: 10px; border: none;
-        font-size: 16px; font-weight: 700; color: #ffffff;
-        background-color: var(--primary-blue); cursor: pointer; transition: all 0.2s ease;
+        width: 100%; padding: 15px; border-radius: 10px; border: none;
+        font-size: 15px; font-weight: 700; color: #fff;
+        background: var(--primary-blue); cursor: pointer; transition: all 0.2s;
       }
-      .btn-submit:hover:not(:disabled) { background-color: #00153a; transform: translateY(-1px); }
-      .btn-submit:active:not(:disabled) { transform: translateY(0); }
-      .btn-submit:disabled { background-color: var(--btn-disabled); cursor: not-allowed; opacity: 0.8; }
+      .btn-submit:hover:not(:disabled) { background: #00153a; transform: translateY(-1px); }
+      .btn-submit:disabled { background: var(--btn-disabled); cursor: not-allowed; opacity: 0.8; }
 
+      .btn-qr {
+        width: 100%; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 700;
+        cursor: pointer; border: 1.5px solid var(--accent-gold); background: #fff; color: #b45309;
+        margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+      }
+      .btn-qr:hover { background: #fffbeb; }
+
+      .btn-logout {
+        width: 100%; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 700;
+        cursor: pointer; border: 1.5px solid #001f54; background: #fff; color: #001f54;
+        margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+      }
+      .btn-logout:hover { background: #f8fafc; }
+
+      /* ── Welcome modal ── */
       #msgBox {
         display: none; position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
-        background-color: var(--primary-blue); color: white; padding: 16px 24px;
+        background: var(--primary-blue); color: white; padding: 14px 24px;
         border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 1000;
-        font-weight: 500; font-size: 14px; text-align: center; min-width: 250px;
-        animation: slideDown 0.3s ease-out;
+        font-size: 14px; text-align: center; min-width: 240px; animation: slideDown 0.3s ease-out;
       }
-      @keyframes slideDown { from { top: -50px; opacity: 0; } to { top: 24px; opacity: 1; } }
+      @keyframes slideDown { from { top:-50px; opacity:0; } to { top:24px; opacity:1; } }
 
       .modal-overlay {
-        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+        position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
         display: flex; align-items: center; justify-content: center;
-        z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s;
       }
       .modal-overlay.active { opacity: 1; visibility: visible; }
-
       .modal-content {
-        background: white; padding: 40px; border-radius: 16px; text-align: center;
-        max-width: 400px; width: 90%; transform: translateY(20px);
-        transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        background: white; padding: 36px; border-radius: 16px; text-align: center;
+        max-width: 380px; width: 90%; transform: translateY(20px);
+        transition: all 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
       }
       .modal-overlay.active .modal-content { transform: translateY(0); }
+      .modal-icon { width: 60px; height: 60px; background: #f0fdf4; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+      .modal-title { font-size: 22px; font-weight: 700; color: var(--primary-blue); margin-bottom: 8px; }
+      .modal-text { color: var(--text-gray); margin-bottom: 16px; line-height: 1.5; font-size: 14px; }
+      .countdown-text { font-weight: bold; color: var(--primary-blue); font-size: 17px; }
 
-      .modal-icon {
-        width: 64px; height: 64px; background: #f0fdf4; color: #16a34a;
-        border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        margin: 0 auto 20px auto;
+      /* QR modal */
+      #qrModal {
+        display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(4px); z-index: 3000; align-items: center; justify-content: center;
       }
-      .modal-title { font-size: 24px; font-weight: 700; color: var(--primary-blue); margin-bottom: 10px; }
-      .modal-text { color: var(--text-gray); margin-bottom: 24px; line-height: 1.5; font-size: 15px; }
-      .countdown-text { font-weight: bold; color: var(--primary-blue); font-size: 18px; }
+      .qr-modal-box {
+        background: white; border-radius: 16px; padding: 28px; text-align: center;
+        max-width: 300px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      }
+      .qr-modal-box h3 { color: var(--primary-blue); font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+      .qr-modal-box p { font-size: 12px; color: var(--text-gray); margin-bottom: 16px; }
+      .btn-download {
+        width: 100%; padding: 11px; background: #16a34a; color: white; border: none;
+        border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 8px;
+        display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;
+      }
+      .btn-download:hover { background: #15803d; }
+      .btn-close-qr {
+        width: 100%; padding: 11px; background: white; color: var(--primary-blue);
+        border: 1.5px solid var(--primary-blue); border-radius: 8px; font-size: 13px;
+        font-weight: 700; cursor: pointer; transition: all 0.2s;
+      }
 
       @media (max-width: 500px) {
         .reason-grid { grid-template-columns: 1fr; }
         .user-profile { flex-direction: column; text-align: center; gap: 12px; }
+        .main-content { padding: 12px; align-items: flex-start; }
       }
     </style>
   </head>
@@ -187,33 +202,49 @@
     <div id="welcomeModal" class="modal-overlay">
       <div class="modal-content">
         <div class="modal-icon">
-          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
         </div>
         <h2 class="modal-title">Welcome to NEU Library</h2>
         <p class="modal-text">Your visit has been logged. Save your QR code for faster check-in next time!</p>
-        <div id="qrContainer" style="margin: 0 auto 16px; width: 160px; height: 160px;"></div>
-        <p style="font-size:11px;color:#94a3b8;margin-bottom:16px;">Screenshot this QR code — scan it at the library entrance next visit</p>
-        <p class="modal-text" style="font-size: 13px; margin-bottom: 0">
+        <div id="qrContainer" style="margin:0 auto 12px;width:150px;height:150px;"></div>
+        <p style="font-size:11px;color:#94a3b8;margin-bottom:14px;">Screenshot to use at the entrance next time</p>
+        <p class="modal-text" style="font-size:13px;margin-bottom:0;">
           Closing in <span id="countdown" class="countdown-text">3</span> seconds...
         </p>
       </div>
     </div>
 
+    <!-- QR Code Modal -->
+    <div id="qrModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;">
+      <div class="qr-modal-box">
+        <h3>Your Library QR Code</h3>
+        <p>Show this at the entrance for instant check-in</p>
+        <div id="qrModalCanvas" style="margin:0 auto 12px;width:180px;height:180px;"></div>
+        <p id="qrModalName" style="font-weight:700;color:var(--primary-blue);font-size:14px;margin-bottom:2px;"></p>
+        <p id="qrModalProgram" style="font-size:11px;color:var(--text-gray);margin-bottom:16px;"></p>
+        <button class="btn-download" id="downloadQrBtn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download QR as Image
+        </button>
+        <button class="btn-close-qr" onclick="document.getElementById('qrModal').style.display='none'">Close</button>
+      </div>
+    </div>
+
     <header class="navbar">
       <div class="nav-left">
-        <img src="neulogo.png" alt="neulogo" class="nav-logo" id="topLogo" onerror="this.style.display='none'" />
+        <img src="neulogo.png" alt="NEU" class="nav-logo" onerror="this.style.display='none'" />
         <span class="nav-title">NEU Library Visitor Log</span>
       </div>
     </header>
 
     <main class="main-content">
       <div class="log-card">
+
+        <!-- User profile -->
         <div class="user-profile">
           <div class="avatar" id="userAvatar">?</div>
           <div class="user-details">
-            <p id="userGreeting" style="font-size:13px;color:var(--text-gray);margin-bottom:2px;"></p>
+            <p id="userGreeting" style="font-size:12px;color:var(--text-gray);margin-bottom:1px;"></p>
             <h3 id="displayUserName">Loading...</h3>
             <p id="displayUserEmail">—</p>
             <span class="badge" id="displayUserProgram">—</span>
@@ -221,12 +252,38 @@
           </div>
         </div>
 
-        <!-- Already checked in today banner -->
-        <div class="already-inside" id="alreadyInsideBanner">
-          <p>✓ You are currently logged in to the library</p>
-          <span id="checkedInSince">Checked in at —</span>
+        <!-- Notice board (shown if admin has notices) -->
+        <div class="notice-board" id="noticeBoard">
+          <div class="notice-title">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+            Library Notices
+          </div>
+          <div id="noticeList"></div>
         </div>
 
+        <!-- Already inside banner with session timer -->
+        <div class="already-inside" id="alreadyInsideBanner">
+          <p>✓ You are currently inside the library</p>
+          <div class="timer" id="sessionTimer">0h 0m</div>
+          <div class="sub" id="checkedInSince">—</div>
+        </div>
+
+        <!-- Visit streak -->
+        <div class="streak-bar" id="streakBar" style="display:none;">
+          <span class="streak-icon">🔥</span>
+          <div class="streak-text">
+            <strong id="streakCount">0 visits this month</strong>
+            <span id="streakSub">Keep it up!</span>
+          </div>
+        </div>
+
+        <!-- Visit history -->
+        <div class="visit-history" id="visitHistorySection" style="display:none;">
+          <div class="visit-history-title">Recent Visits</div>
+          <div id="visitHistoryList"></div>
+        </div>
+
+        <!-- Check-in form -->
         <div class="card-body">
           <h4>What is your reason for visiting today?</h4>
           <div class="reason-grid">
@@ -247,35 +304,26 @@
               <span>Meeting</span>
             </div>
           </div>
+
           <button id="submitLogBtn" class="btn-submit" disabled>Log Visit</button>
-          <button id="showQrBtn" style="width:100%;padding:13px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;border:1.5px solid var(--accent-gold);background:#fff;color:#b45309;margin-top:12px;transition:all 0.2s ease;display:flex;align-items:center;justify-content:center;gap:8px;">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+          <button id="showQrBtn" class="btn-qr">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect>
               <rect x="3" y="14" width="7" height="7"></rect>
               <path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"></path>
             </svg>
             My QR Code
           </button>
-          <button id="logoutBtn" style="width:100%;padding:13px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;border:1.5px solid #001f54;background:#fff;color:#001f54;margin-top:12px;transition:all 0.2s ease;display:flex;align-items:center;justify-content:center;gap:8px;">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+          <button id="logoutBtn" class="btn-logout">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
               <polyline points="16 17 21 12 16 7"></polyline>
               <line x1="21" y1="12" x2="9" y2="12"></line>
             </svg>
             Log Out
           </button>
-
-          <!-- QR Modal -->
-          <div id="qrModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;">
-            <div style="background:white;border-radius:16px;padding:32px;text-align:center;max-width:320px;width:90%;box-shadow:0 10px 25px rgba(0,0,0,0.2);">
-              <h3 style="color:var(--primary-blue);font-size:18px;font-weight:700;margin-bottom:6px;">Your Library QR Code</h3>
-              <p style="font-size:13px;color:var(--text-gray);margin-bottom:20px;">Show this at the library entrance for instant check-in</p>
-              <div id="qrModalCanvas" style="margin:0 auto 16px;width:180px;height:180px;"></div>
-              <p id="qrModalName" style="font-weight:700;color:var(--primary-blue);font-size:15px;margin-bottom:4px;"></p>
-              <p id="qrModalProgram" style="font-size:12px;color:var(--text-gray);margin-bottom:20px;"></p>
-              <button onclick="document.getElementById('qrModal').style.display='none'" style="width:100%;padding:12px;background:var(--primary-blue);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Close</button>
-            </div>
-          </div>
         </div>
       </div>
     </main>
@@ -287,93 +335,186 @@
       const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1YWpqdXhhYndmcXBhd3Bqb3NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0NTg0MjksImV4cCI6MjA4OTAzNDQyOX0.O1ZbG4vC6q4DxQKTq664i3e4xwUYcvgVDOsuNMDNK4I';
       const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      const userId = localStorage.getItem("userId");
-      if (!userId) { window.location.href = "index.html"; }
-
+      const userId      = localStorage.getItem("userId");
       const userName    = localStorage.getItem("userName")    || "Guest";
       const userEmail   = localStorage.getItem("userEmail")   || "—";
       const userProgram = localStorage.getItem("userProgram") || "—";
+      if (!userId) { window.location.href = "index.html"; }
 
       const reasonOptions = document.querySelectorAll(".reason-option");
       const submitLogBtn  = document.getElementById("submitLogBtn");
       const welcomeModal  = document.getElementById("welcomeModal");
       const countdownEl   = document.getElementById("countdown");
       let selectedReason  = null;
-      let alreadyLoggedId = null; // existing "inside" log if any
+      let alreadyLoggedId = null;
+      let checkInTime     = null;
 
-      // ── Load user details ──
+      // ── User details ──
       document.getElementById("displayUserName").textContent    = userName;
       document.getElementById("displayUserEmail").textContent   = userEmail;
       document.getElementById("displayUserProgram").textContent = userProgram;
-
-      // Avatar initial
       document.getElementById("userAvatar").textContent = userName.charAt(0).toUpperCase();
 
-      // ── Greeting based on PH time ──
-      const phHour = new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", hour: "numeric", hour12: false });
-      const hour = parseInt(phHour);
-      const greeting = hour < 12 ? "Good morning," : hour < 17 ? "Good afternoon," : "Good evening,";
-      document.getElementById("userGreeting").textContent = greeting;
+      // ── Greeting ──
+      const hr = parseInt(new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", hour: "numeric", hour12: false }));
+      document.getElementById("userGreeting").textContent = hr < 12 ? "Good morning," : hr < 17 ? "Good afternoon," : "Good evening,";
 
-      // ── Live clock in PH time ──
+      // ── Live clock ──
       function updateClock() {
-        const now = new Date().toLocaleString("en-PH", {
-          timeZone: "Asia/Manila",
-          weekday: "short", month: "short", day: "numeric",
+        document.getElementById("liveClock").textContent = new Date().toLocaleString("en-PH", {
+          timeZone: "Asia/Manila", weekday: "short", month: "short", day: "numeric",
           hour: "2-digit", minute: "2-digit", second: "2-digit"
         });
-        document.getElementById("liveClock").textContent = now;
       }
-      updateClock();
-      setInterval(updateClock, 1000);
+      updateClock(); setInterval(updateClock, 1000);
 
-      // ── Check if already inside today ──
+      // ── Session timer ──
+      function startSessionTimer(fromISO) {
+        checkInTime = new Date(fromISO);
+        function tick() {
+          const diff = Math.max(0, Math.floor((Date.now() - checkInTime) / 1000));
+          const h = Math.floor(diff / 3600);
+          const m = Math.floor((diff % 3600) / 60);
+          const s = diff % 60;
+          document.getElementById("sessionTimer").textContent =
+            h > 0 ? `${h}h ${m}m ${s}s` : `${m}m ${s}s`;
+        }
+        tick(); setInterval(tick, 1000);
+      }
+
+      // ── Duration helper ──
+      function calcDuration(timeIn, timeOut) {
+        if (!timeOut) return "—";
+        const m = Math.floor((new Date(timeOut) - new Date(timeIn)) / 60000);
+        const h = Math.floor(m / 60);
+        return h > 0 ? `${h}h ${m % 60}m` : `${m}m`;
+      }
+
+      // ── Check if already inside ──
       async function checkAlreadyInside() {
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
-
+        const todayStart = new Date(); todayStart.setHours(0,0,0,0);
         const { data } = await supabase
-          .from("visit_logs")
-          .select("id, time_in, reason")
-          .eq("user_id", userId)
-          .eq("status", "inside")
+          .from("visit_logs").select("id, time_in, reason")
+          .eq("user_id", userId).eq("status", "inside")
           .gte("time_in", todayStart.toISOString())
-          .order("time_in", { ascending: false })
-          .limit(1)
-          .maybeSingle();
+          .order("time_in", { ascending: false }).limit(1).maybeSingle();
 
         if (data) {
           alreadyLoggedId = data.id;
           localStorage.setItem("currentLogId", data.id);
-
-          // Show banner
           const banner = document.getElementById("alreadyInsideBanner");
-          banner.style.display = "block";
+          banner.classList.add("show");
           const timeIn = new Date(data.time_in).toLocaleTimeString("en-PH", {
             timeZone: "Asia/Manila", hour: "2-digit", minute: "2-digit"
           });
           document.getElementById("checkedInSince").textContent =
             `Checked in at ${timeIn} for "${data.reason}"`;
-
-          // Disable the Log Visit form — already inside
+          startSessionTimer(data.time_in);
           submitLogBtn.disabled = true;
           submitLogBtn.textContent = "Already checked in";
           submitLogBtn.style.background = "#94a3b8";
-          reasonOptions.forEach(opt => {
-            opt.style.pointerEvents = "none";
-            opt.style.opacity = "0.5";
-          });
+          reasonOptions.forEach(opt => { opt.style.pointerEvents = "none"; opt.style.opacity = "0.5"; });
         }
       }
-      checkAlreadyInside();
+
+      // ── Load notice board from Supabase ──
+      async function loadNotices() {
+        const { data } = await supabase
+          .from("notices")
+          .select("*")
+          .eq("active", true)
+          .order("created_at", { ascending: false })
+          .limit(5);
+
+        if (data && data.length > 0) {
+          const board = document.getElementById("noticeBoard");
+          const list  = document.getElementById("noticeList");
+          board.classList.add("show");
+          list.innerHTML = data.map(n =>
+            `<div class="notice-item">${n.message}</div>`
+          ).join("");
+        }
+      }
+
+      // ── Load visit history (last 3 completed visits) ──
+      async function loadVisitHistory() {
+        const { data } = await supabase
+          .from("visit_logs").select("reason, time_in, time_out, status")
+          .eq("user_id", userId).eq("status", "logged_out")
+          .order("time_in", { ascending: false }).limit(3);
+
+        if (data && data.length > 0) {
+          const section = document.getElementById("visitHistorySection");
+          const list    = document.getElementById("visitHistoryList");
+          section.style.display = "block";
+          list.innerHTML = data.map(v => {
+            const date = new Date(v.time_in).toLocaleDateString("en-PH", {
+              timeZone: "Asia/Manila", month: "short", day: "numeric"
+            });
+            const duration = calcDuration(v.time_in, v.time_out);
+            return `
+              <div class="history-item">
+                <div class="history-left">
+                  <span class="history-reason">${v.reason}</span>
+                  <span class="history-date">${date}</span>
+                </div>
+                <span class="history-duration">${duration}</span>
+              </div>`;
+          }).join("");
+        }
+      }
+
+      // ── Load visit streak (unique days this month) ──
+      async function loadStreak() {
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+        const { data } = await supabase
+          .from("visit_logs").select("time_in")
+          .eq("user_id", userId).gte("time_in", monthStart);
+
+        if (data && data.length > 0) {
+          const uniqueDays = new Set(data.map(v =>
+            new Date(v.time_in).toLocaleDateString("en-PH", { timeZone: "Asia/Manila" })
+          )).size;
+
+          const bar  = document.getElementById("streakBar");
+          const count = document.getElementById("streakCount");
+          const sub   = document.getElementById("streakSub");
+          bar.style.display = "flex";
+          count.textContent = `${uniqueDays} day${uniqueDays !== 1 ? "s" : ""} visited this month`;
+          sub.textContent = uniqueDays >= 10 ? "Amazing dedication! 🎉"
+            : uniqueDays >= 5 ? "Great consistency!"
+            : uniqueDays >= 2 ? "Keep coming back!"
+            : "Welcome! See you again soon.";
+        }
+      }
+
+      // ── Pre-select last used reason ──
+      async function loadLastReason() {
+        const { data } = await supabase
+          .from("visit_logs").select("reason")
+          .eq("user_id", userId)
+          .order("time_in", { ascending: false }).limit(1).maybeSingle();
+
+        if (data?.reason) {
+          localStorage.setItem("lastReason", data.reason);
+          const matching = [...reasonOptions].find(o => o.dataset.reason === data.reason);
+          if (matching) {
+            const tag = document.createElement("span");
+            tag.className = "last-used-tag";
+            tag.textContent = "Last used";
+            matching.appendChild(tag);
+            matching.classList.add("last-used");
+          }
+        }
+      }
 
       // ── QR Code ──
       function generateQR(containerId, size) {
-        const container = document.getElementById(containerId);
-        container.innerHTML = "";
-        const payload = JSON.stringify({ uid: userId, name: userName, email: userEmail });
-        new QRCode(container, {
-          text: payload,
+        const el = document.getElementById(containerId);
+        el.innerHTML = "";
+        new QRCode(el, {
+          text: JSON.stringify({ uid: userId, name: userName, email: userEmail }),
           width: size, height: size,
           colorDark: "#001f54", colorLight: "#ffffff",
           correctLevel: QRCode.CorrectLevel.M
@@ -387,60 +528,66 @@
         document.getElementById("qrModal").style.display = "flex";
       });
 
+      // ── Download QR as image ──
+      document.getElementById("downloadQrBtn").addEventListener("click", () => {
+        const canvas = document.querySelector("#qrModalCanvas canvas");
+        const img    = document.querySelector("#qrModalCanvas img");
+        let src = null;
+        if (canvas) src = canvas.toDataURL("image/png");
+        else if (img) src = img.src;
+        if (!src) return;
+        const a = document.createElement("a");
+        a.href = src;
+        a.download = `NEU_Library_QR_${userName.replace(/\s+/g, "_")}.png`;
+        a.click();
+      });
+
       // ── Reason selection ──
-      reasonOptions.forEach((option) => {
+      reasonOptions.forEach(option => {
         option.addEventListener("click", () => {
-          if (alreadyLoggedId) return; // block if already inside
-          reasonOptions.forEach((opt) => opt.classList.remove("selected"));
+          if (alreadyLoggedId) return;
+          reasonOptions.forEach(o => o.classList.remove("selected"));
           option.classList.add("selected");
-          selectedReason = option.getAttribute("data-reason");
+          selectedReason = option.dataset.reason;
           submitLogBtn.disabled = false;
         });
       });
 
       function showMessage(msg) {
-        const msgBox = document.getElementById("msgBox");
-        msgBox.textContent = msg;
-        msgBox.style.display = "block";
-        setTimeout(() => { msgBox.style.display = "none"; }, 3000);
+        const box = document.getElementById("msgBox");
+        box.textContent = msg; box.style.display = "block";
+        setTimeout(() => { box.style.display = "none"; }, 3000);
       }
 
-      // ── SUBMIT VISIT LOG ──
+      // ── Submit visit log ──
       submitLogBtn.addEventListener("click", async () => {
         if (!selectedReason || alreadyLoggedId) return;
-
-        // Prevent double submit
         submitLogBtn.disabled = true;
         submitLogBtn.textContent = "Logging visit...";
-        reasonOptions.forEach(opt => { opt.style.pointerEvents = "none"; });
-
-        const timeIn = new Date().toISOString();
+        reasonOptions.forEach(o => { o.style.pointerEvents = "none"; });
 
         const { data: logData, error } = await supabase
           .from("visit_logs")
-          .insert({ user_id: userId, reason: selectedReason, status: "inside", time_in: timeIn })
-          .select("id")
-          .single();
+          .insert({ user_id: userId, reason: selectedReason, status: "inside" })
+          .select("id").single();
 
         if (error) {
           showMessage("Failed to log visit: " + error.message);
           submitLogBtn.disabled = false;
           submitLogBtn.textContent = "Log Visit";
-          reasonOptions.forEach(opt => { opt.style.pointerEvents = ""; });
+          reasonOptions.forEach(o => { o.style.pointerEvents = ""; });
           return;
         }
 
         if (logData?.id) localStorage.setItem("currentLogId", logData.id);
+        localStorage.setItem("lastReason", selectedReason);
 
-        generateQR("qrContainer", 160);
+        generateQR("qrContainer", 150);
         welcomeModal.classList.add("active");
-        let timeLeft = 3;
-        countdownEl.textContent = timeLeft;
-
+        let t = 3; countdownEl.textContent = t;
         const timer = setInterval(() => {
-          timeLeft--;
-          countdownEl.textContent = timeLeft;
-          if (timeLeft <= 0) {
+          t--; countdownEl.textContent = t;
+          if (t <= 0) {
             clearInterval(timer);
             localStorage.removeItem("currentLogId");
             localStorage.clear();
@@ -449,44 +596,30 @@
         }, 1000);
       });
 
-      // ── LOG OUT ──
+      // ── Log out ──
       document.getElementById("logoutBtn").addEventListener("click", async () => {
-        const logId  = localStorage.getItem("currentLogId");
-        const timeOut = new Date().toISOString();
-        let updateError = null;
-
+        const logId = localStorage.getItem("currentLogId");
+        const payload = { status: "logged_out", time_out: new Date().toISOString() };
         if (logId) {
-          const { error } = await supabase
-            .from("visit_logs")
-            .update({ status: "logged_out", time_out: timeOut })
-            .eq("id", logId);
-          updateError = error;
+          await supabase.from("visit_logs").update(payload).eq("id", logId);
         } else {
-          const { data: latestLog } = await supabase
-            .from("visit_logs")
-            .select("id")
-            .eq("user_id", userId)
-            .eq("status", "inside")
-            .order("time_in", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          if (latestLog) {
-            const { error } = await supabase
-              .from("visit_logs")
-              .update({ status: "logged_out", time_out: timeOut })
-              .eq("id", latestLog.id);
-            updateError = error;
-          }
+          const { data } = await supabase
+            .from("visit_logs").select("id").eq("user_id", userId).eq("status", "inside")
+            .order("time_in", { ascending: false }).limit(1).maybeSingle();
+          if (data) await supabase.from("visit_logs").update(payload).eq("id", data.id);
         }
-
-        if (updateError) console.error("Status update failed:", updateError.message);
-
         await supabase.auth.signOut();
         localStorage.clear();
         showMessage("Logged out successfully.");
         setTimeout(() => { window.location.href = "index.html"; }, 1000);
       });
 
+      // ── Init ──
+      checkAlreadyInside();
+      loadNotices();
+      loadVisitHistory();
+      loadStreak();
+      loadLastReason();
     </script>
   </body>
 </html>
