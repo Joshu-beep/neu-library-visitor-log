@@ -39,7 +39,7 @@
 
       .login-wrapper {
         width: 100%;
-        max-width: 480px;
+        max-width: 580px;
         display: flex;
         flex-direction: column;
         background: #ffffff;
@@ -49,7 +49,7 @@
         overflow-y: auto;
       }
 
-      @media (max-width: 800px) {
+      @media (max-width: 900px) {
         .login-wrapper { max-width: 100%; box-shadow: none; }
         body { overflow: auto; }
       }
@@ -249,10 +249,68 @@
         from { top: -50px; opacity: 0; }
         to { top: 24px; opacity: 1; }
       }
+
+      /* ── Announcement overlay ── */
+      .announce-panel {
+        position: fixed; top: 20px; right: 20px; z-index: 999;
+        width: 300px; display: none; flex-direction: column; gap: 0;
+        filter: drop-shadow(0 8px 24px rgba(0,0,0,0.18));
+        animation: announceIn 0.4s ease;
+      }
+      .announce-panel.show { display: flex; }
+      @keyframes announceIn { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
+
+      .announce-toggle {
+        background: var(--primary-blue); color: white; border: none;
+        padding: 10px 16px; border-radius: 10px 10px 0 0; cursor: pointer;
+        font-size: 13px; font-weight: 700; display: flex; align-items: center;
+        justify-content: space-between; gap: 8px; width: 100%;
+        border-bottom: 2px solid var(--accent-gold);
+      }
+      .announce-toggle span { display: flex; align-items: center; gap: 7px; }
+
+      .announce-body {
+        background: white; border-radius: 0 0 12px 12px;
+        border: 2px solid #f59e0b; border-top: none;
+        max-height: 360px; overflow-y: auto;
+      }
+
+      .announce-section-label {
+        font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+        color: #94a3b8; padding: 10px 14px 4px; border-bottom: 1px solid #f1f5f9;
+      }
+
+      .announce-item {
+        padding: 10px 14px; border-bottom: 1px solid #f1f5f9;
+        display: flex; gap: 10px; align-items: flex-start;
+      }
+      .announce-item:last-child { border-bottom: none; }
+
+      .announce-dot-event { width: 8px; height: 8px; border-radius: 50%; background: #3b82f6; flex-shrink: 0; margin-top: 5px; }
+      .announce-dot-reminder { width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; flex-shrink: 0; margin-top: 5px; }
+
+      .announce-msg { font-size: 13px; color: #1e293b; line-height: 1.45; font-weight: 500; }
+      .announce-date { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+      .announce-empty { padding: 14px; font-size: 13px; color: #94a3b8; text-align: center; }
     </style>
   </head>
   <body>
     <div id="msgBox"></div>
+
+    <!-- Announcement overlay top-right -->
+    <div class="announce-panel" id="announcePanel">
+      <button class="announce-toggle" onclick="document.getElementById('announcePanel').classList.toggle('show')">
+        <span>
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path></svg>
+          Library Announcements
+        </span>
+        <svg id="announceChevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+      </button>
+      <div class="announce-body" id="announceBody">
+        <div class="announce-empty">Loading...</div>
+      </div>
+    </div>
 
     <div class="login-wrapper">
       <div class="login-card">
@@ -266,14 +324,6 @@
 
         <!-- LOGIN VIEW -->
         <div class="card-body" id="loginView">
-          <!-- Announcement banner (loaded from Supabase notices) -->
-          <div id="announcementBanner" style="display:none;background:#fffbeb;border:2px solid #f59e0b;border-radius:10px;padding:12px 16px;margin-bottom:20px;">
-            <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:7px;display:flex;align-items:center;gap:5px;">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path></svg>
-              Library Announcements
-            </div>
-            <div id="announcementList"></div>
-          </div>
           <form id="loginForm">
             <div class="input-group">
               <label>Institutional Email</label>
@@ -718,24 +768,59 @@
         };
       });
 
-      // ── Load announcements from Supabase notices table ──
+      // ── Load announcements into top-right overlay ──
       (async () => {
         try {
           const { data } = await supabase
-            .from("notices").select("message").eq("active", true)
-            .order("created_at", { ascending: false }).limit(5);
-          if (data && data.length > 0) {
-            const banner = document.getElementById("announcementBanner");
-            const list   = document.getElementById("announcementList");
-            banner.style.display = "block";
-            list.innerHTML = data.map(n =>
-              `<div style="font-size:13px;color:#78350f;padding:4px 0;border-bottom:1px solid #fde68a;line-height:1.5;">${n.message}</div>`
-            ).join("");
-            // Fix last item border
-            const items = list.querySelectorAll("div");
-            if (items.length) items[items.length-1].style.borderBottom = "none";
+            .from("notices")
+            .select("*")
+            .eq("active", true)
+            .order("event_date", { ascending: true, nullsFirst: false });
+
+          const body = document.getElementById("announceBody");
+
+          if (!data || !data.length) {
+            body.innerHTML = `<div class="announce-empty">No announcements at this time.</div>`;
+            return;
           }
-        } catch(e) { /* silently skip if notices table doesn't exist yet */ }
+
+          // Separate events (have event_date) from reminders (no event_date)
+          const events    = data.filter(n => n.type === "event" || n.event_date);
+          const reminders = data.filter(n => n.type === "reminder" && !n.event_date);
+
+          let html = "";
+
+          if (events.length) {
+            html += `<div class="announce-section-label">📅 Upcoming Events</div>`;
+            html += events.map(n => {
+              const dateStr = n.event_date
+                ? new Date(n.event_date).toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })
+                : "";
+              return `<div class="announce-item">
+                <div class="announce-dot-event"></div>
+                <div>
+                  <div class="announce-msg">${n.message}</div>
+                  ${dateStr ? `<div class="announce-date">📅 ${dateStr}</div>` : ""}
+                </div>
+              </div>`;
+            }).join("");
+          }
+
+          if (reminders.length) {
+            html += `<div class="announce-section-label">🔔 Reminders</div>`;
+            html += reminders.map(n => `
+              <div class="announce-item">
+                <div class="announce-dot-reminder"></div>
+                <div><div class="announce-msg">${n.message}</div></div>
+              </div>`).join("");
+          }
+
+          body.innerHTML = html;
+
+          // Auto-show if there's content
+          document.getElementById("announcePanel").classList.add("show");
+
+        } catch(e) { /* silently skip */ }
       })();
     </script>
   </body>
