@@ -132,13 +132,19 @@
     </style>
   </head>
   <body>
+    <!-- Admin access guard — redirects immediately if not coming from admin dashboard -->
+    <script>
+      if (sessionStorage.getItem('adminQR') !== '1') {
+        window.location.replace('index.html');
+      }
+    </script>
 
     <nav>
       <div class="nav-left">
         <img src="neulogo.png" alt="NEU" class="nav-logo" onerror="this.style.display='none'">
         QR Check-in
       </div>
-      <a href="index.html" class="btn-back">← Back</a>
+      <a href="admindashboard.html" class="btn-back">← Back to Dashboard</a>
     </nav>
 
     <main>
@@ -185,7 +191,7 @@
 
           <button id="checkinBtn" disabled>Scan QR code first</button>
 
-          <div class="foot">Prefer to log in? <a href="index.html">Sign in here</a></div>
+          <div class="foot">Go back to <a href="admindashboard.html">Admin Dashboard</a></div>
         </div>
       </div>
     </main>
@@ -195,6 +201,8 @@
     <script>
       // Wait for all scripts to load
       window.addEventListener('load', function () {
+        // Clear the token so direct URL access is blocked after first visit
+        sessionStorage.removeItem('adminQR');
 
         const SUPABASE_URL = 'https://ruajjuxabwfqpawpjosl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1YWpqdXhhYndmcXBhd3Bqb3NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0NTg0MjksImV4cCI6MjA4OTAzNDQyOX0.O1ZbG4vC6q4DxQKTq664i3e4xwUYcvgVDOsuNMDNK4I';
@@ -425,8 +433,7 @@
           var result = await db.from('visit_logs').insert({
             user_id: scannedUid,
             reason: reason,
-            status: 'inside',
-            time_in: new Date().toISOString()
+            status: 'inside'
           });
 
           if (result.error) {
