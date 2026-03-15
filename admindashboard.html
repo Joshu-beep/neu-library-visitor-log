@@ -615,37 +615,8 @@
 
       // ── Load notices for admin ──
       async function loadNoticesAdmin() {
-        const { data, error } = await supabase
-          .from('notices').select('*').order('created_at', { ascending: false });
-        const container = document.getElementById('noticesAdminList');
-        if (error || !data?.length) {
-          container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">No notices yet. Post one above.</div>`;
-          return;
-        }
-        container.innerHTML = data.map(n => `
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 14px;background:${n.active ? '#fffbeb' : '#f8fafc'};border:1px solid ${n.active ? '#fde68a' : 'var(--border-color)'};border-radius:8px;margin-bottom:8px;">
-            <div style="flex:1;">
-              <div style="font-size:13px;color:var(--text-dark);margin-bottom:4px;line-height:1.4;">${n.message}</div>
-              <div style="font-size:11px;color:var(--text-muted);">${new Date(n.created_at).toLocaleDateString('en-PH',{timeZone:'Asia/Manila',month:'short',day:'numeric',year:'numeric'})}</div>
-            </div>
-            <div style="display:flex;gap:8px;flex-shrink:0;align-items:center;">
-              <button onclick="toggleNotice('${n.id}', ${n.active})"
-                style="padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid;${n.active ? 'background:#f1f5f9;color:#64748b;border-color:var(--border-color)' : 'background:#f0fdf4;color:#16a34a;border-color:#bbf7d0'}">
-                ${n.active ? 'Hide' : 'Show'}
-              </button>
-              <button onclick="deleteNotice('${n.id}')"
-                style="padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:#fef2f2;color:#ef4444;border:1px solid #fecaca;">
-                Delete
-              </button>
-            </div>
-          </div>`).join('');
-      }
-
-      // ── Add notice ──
-      // ── Load notices for admin ──
-      async function loadNoticesAdmin() {
         const { data } = await supabase
-          .from('notices').select('*').order('event_date', { ascending: true, nullsFirst: false });
+          .from('notices').select('*').order('created_at', { ascending: false });
 
         const events    = (data || []).filter(n => n.type === 'event' || n.event_date);
         const reminders = (data || []).filter(n => n.type === 'reminder' && !n.event_date);
