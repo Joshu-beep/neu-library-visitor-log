@@ -42,7 +42,7 @@
       .workspace {
         flex: 1; display: grid; grid-template-columns: 260px 1fr;
         gap: 16px; padding: 16px 20px; overflow: hidden; min-height: 0;
-        align-items: start;
+        align-items: start; max-width: 1100px; margin: 0 auto; width: 100%;
       }
 
       /* ── Left panel ── */
@@ -283,26 +283,13 @@
       </div>
     </div>
 
-    <!-- Announcement overlay top-right -->
-    <div class="announce-overlay" id="announceOverlay">
-      <div class="announce-head">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path></svg>
-        Library Announcements
-      </div>
-      <div id="announceList"></div>
-    </div>
-
     <!-- Navbar -->
     <nav class="navbar">
-      <div class="nav-left">
-        <img src="neulogo.png" alt="NEU" class="nav-logo" onerror="this.style.display='none'" />
-        <span class="nav-title">NEU Library Visitor Log</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:16px;">
-        <button id="announceBellBtn" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;" title="Library Announcements">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path></svg>
-          Announcements
-        </button>
+      <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1100px;margin:0 auto;">
+        <div class="nav-left">
+          <img src="neulogo.png" alt="NEU" class="nav-logo" onerror="this.style.display='none'" />
+          <span class="nav-title">NEU Library Visitor Log</span>
+        </div>
         <span class="nav-clock" id="navClock">—</span>
       </div>
     </nav>
@@ -503,41 +490,8 @@
         }
       }
 
-      // ── Announcements overlay ──
-      async function loadNotices() {
-        const { data } = await supabase
-          .from("notices").select("*").eq("active", true)
-          .order("created_at", { ascending: false }).limit(5);
-
-        if (data?.length) {
-          const overlay = document.getElementById("announceOverlay");
-          const list    = document.getElementById("announceList");
-          list.innerHTML = data.map(n =>
-            `<div class="announce-item">${n.message}</div>`
-          ).join("");
-          // Auto-show on load
-          overlay.classList.add("show");
-          // Update bell badge
-          const btn = document.getElementById("announceBellBtn");
-          btn.style.background = "rgba(245,158,11,0.3)";
-          btn.style.borderColor = "rgba(245,158,11,0.6)";
-        }
-      }
-
-      // Bell toggle
-      document.getElementById("announceBellBtn").addEventListener("click", () => {
-        const overlay = document.getElementById("announceOverlay");
-        overlay.classList.toggle("show");
-      });
-
-      // Close overlay when clicking outside
-      document.addEventListener("click", (e) => {
-        const overlay = document.getElementById("announceOverlay");
-        const bell = document.getElementById("announceBellBtn");
-        if (!overlay.contains(e.target) && !bell.contains(e.target)) {
-          overlay.classList.remove("show");
-        }
-      });
+      // ── Announcements removed from visitor log ──
+      // (shown on login page instead)
 
       // ── Visit history ──
       async function loadVisitHistory() {
@@ -688,7 +642,6 @@
 
       // ── Init ──
       checkAlreadyInside();
-      loadNotices();
       loadVisitHistory();
       loadStreak();
       loadLastReason();
