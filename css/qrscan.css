@@ -120,30 +120,21 @@ main { flex: 1; display: flex; align-items: center; justify-content: center; pad
 
 canvas { display: none; }
 
-/* ── Responsive breakpoints ── */
-
-/* Tablet (600px–899px) */
-@media (max-width: 899px) {
-  .scan-card { max-width: 480px; padding: 20px; }
-  .navbar { padding: 12px 20px; }
-  .nav-title { font-size: 16px; }
-}
-
-/* Mobile (below 600px) */
-@media (max-width: 599px) {
-  .navbar { padding: 10px 16px; }
-  .nav-title { font-size: 14px; }
-  .nav-logo { width: 26px; height: 26px; }
-  .scan-card { max-width: 100%; margin: 10px; padding: 16px; border-radius: 14px; }
-  .camera-view { border-radius: 10px; }
+/* ── Responsive ── */
+@media (max-width: 767px) {
+  .navbar { padding: 0 16px; height: 52px; }
+  .nav-title { font-size: 15px; }
+  .scan-card { max-width: 100%; margin: 10px; padding: 18px; border-radius: 14px; }
   .reasons { gap: 6px; }
   .rbtn { padding: 9px 12px; font-size: 12px; }
   #checkinBtn { padding: 14px; font-size: 14px; }
-  .user-card { padding: 12px 14px; }
 }
-
-/* Small mobile (below 400px) */
-@media (max-width: 399px) {
-  .scan-card { margin: 6px; padding: 12px; }
+@media (max-width: 479px) {
+  .nav-title { font-size: 13px; }
+  .scan-card { margin: 6px; padding: 14px; }
   .rbtn { padding: 8px 10px; font-size: 11px; }
+  #checkinBtn { padding: 12px; font-size: 13px; }
+}
+@media (min-width: 1200px) {
+  .scan-card { max-width: 580px; }
 }
