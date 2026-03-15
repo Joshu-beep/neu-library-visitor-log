@@ -278,12 +278,34 @@
         setTimeout(() => { box.style.display = "none"; }, 3000);
       }
  
-      // ── Submit ──
-      submitLogBtn.addEventListener("click", async () => {
+      // ── Confirm modal ──
+      const confirmModal = document.getElementById("confirmModal");
+      document.getElementById("confirmCancelBtn").addEventListener("click", () => {
+        confirmModal.classList.remove("active");
+        submitLogBtn.disabled = false;
+        submitLogBtn.textContent = "Log Visit";
+        reasonOptions.forEach(o => { o.style.pointerEvents = ""; });
+      });
+ 
+      submitLogBtn.addEventListener("click", () => {
         if (!selectedReason || alreadyLoggedId) return;
+ 
+        // Show confirm modal first
+        const now = new Date().toLocaleTimeString("en-PH", {
+          timeZone: "Asia/Manila", hour: "2-digit", minute: "2-digit"
+        });
+        document.getElementById("confirmReason").textContent = selectedReason;
+        document.getElementById("confirmTime").textContent = now;
+        confirmModal.classList.add("active");
+ 
         submitLogBtn.disabled = true;
-        submitLogBtn.textContent = "Logging visit...";
+        submitLogBtn.textContent = "Confirming...";
         reasonOptions.forEach(o => { o.style.pointerEvents = "none"; });
+      });
+ 
+      document.getElementById("confirmOkBtn").addEventListener("click", async () => {
+        confirmModal.classList.remove("active");
+        submitLogBtn.textContent = "Logging visit...";
  
         const { data: logData, error } = await supabase
           .from("visit_logs")
@@ -299,8 +321,19 @@
         if (logData?.id) localStorage.setItem("currentLogId", logData.id);
         localStorage.setItem("lastReason", selectedReason);
  
+        // Show animated check-in modal
         generateQR("qrContainer", 140);
-        welcomeModal.classList.add("active");
+        const modal = document.getElementById("welcomeModal");
+        modal.classList.add("active");
+ 
+        // Trigger checkmark animation
+        setTimeout(() => {
+          const circle = modal.querySelector(".checkmark-circle");
+          const tick   = modal.querySelector(".checkmark-tick");
+          if (circle) circle.classList.add("animate");
+          if (tick)   tick.classList.add("animate");
+        }, 100);
+ 
         let t = 3; countdownEl.textContent = t;
         const timer = setInterval(() => {
           t--; countdownEl.textContent = t;
@@ -331,8 +364,57 @@
         setTimeout(() => { window.location.href = "index.html"; }, 1000);
       });
  
+      // ── Visit count badge ──
+      async function loadVisitBadge() {
+        const { count } = await supabase
+          .from("visit_logs")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", userId);
+        if (count > 0) {
+          const badge = document.getElementById("visitBadge");
+          badge.textContent = `${count} visit${count !== 1 ? "s" : ""}`;
+          badge.style.display = "inline-block";
+        }
+      }
+ 
+      // ── Library hours widget ──
+      function updateHoursPill() {
+        const schedule = {
+          0: null,                    // Sunday — closed
+          1: { open: 7, close: 21 }, // Monday
+          2: { open: 7, close: 21 },
+          3: { open: 7, close: 21 },
+          4: { open: 7, close: 21 },
+          5: { open: 7, close: 21 }, // Friday
+          6: { open: 8, close: 17 }, // Saturday
+        };
+        const now  = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+        const day  = now.getDay();
+        const h    = now.getHours();
+        const pill = document.getElementById("hoursPill");
+        const hrs  = schedule[day];
+ 
+        if (!hrs) {
+          pill.textContent = "Closed today";
+          pill.className = "hours-pill closed";
+        } else if (h >= hrs.open && h < hrs.close) {
+          const closeStr = hrs.close >= 12 ? `${hrs.close > 12 ? hrs.close - 12 : hrs.close}:00 ${hrs.close >= 12 ? "PM" : "AM"}` : `${hrs.close}:00 AM`;
+          pill.textContent = `Open · Closes ${closeStr}`;
+          pill.className = "hours-pill open";
+        } else if (h < hrs.open) {
+          const openStr = hrs.open >= 12 ? `${hrs.open > 12 ? hrs.open - 12 : hrs.open}:00 PM` : `${hrs.open}:00 AM`;
+          pill.textContent = `Opens at ${openStr}`;
+          pill.className = "hours-pill soon";
+        } else {
+          pill.textContent = "Closed now";
+          pill.className = "hours-pill closed";
+        }
+      }
+      updateHoursPill();
+ 
       // ── Init ──
       checkAlreadyInside();
       loadVisitHistory();
       loadStreak();
       loadLastReason();
+      loadVisitBadge();
