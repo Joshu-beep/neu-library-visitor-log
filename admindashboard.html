@@ -11,6 +11,21 @@
   <body>
     <div id="toast">Message</div>
 
+    <!-- Detail Modal -->
+    <div class="detail-modal-overlay" id="detailModal">
+      <div class="detail-modal">
+        <div class="detail-modal-header">
+          <div>
+            <h2 id="modalName">—</h2>
+            <p id="modalEmail">—</p>
+          </div>
+          <button class="detail-modal-close" onclick="closeDetailModal()">✕</button>
+        </div>
+        <div class="detail-modal-body" id="modalBody"></div>
+        <div class="detail-modal-actions" id="modalActions"></div>
+      </div>
+    </div>
+
     <nav class="navbar">
       <div class="nav-logo">
         <img src="img/neulogo.png" alt="NEU" onerror="this.style.display='none'" />
