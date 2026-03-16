@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
     <title>NEU Library — QR Check-in</title>
     <link rel="icon" type="image/x-icon" href="img/neulogo.png" />
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
@@ -15,8 +15,9 @@
       if (sessionStorage.getItem('adminQR') !== '1') {
         window.location.replace('index.html');
       }
+      // Keep token alive — don't remove it so refresh still works
     </script>
- 
+
     <nav>
       <div class="nav-left">
         <img src="img/neulogo.png" alt="NEU" class="nav-logo" onerror="this.style.display='none'">
@@ -24,7 +25,7 @@
       </div>
       <a href="admindashboard.html" class="btn-back">← Back to Dashboard</a>
     </nav>
- 
+
     <main>
       <div class="card">
         <div class="card-head">
@@ -32,7 +33,7 @@
           <p>Tap the button below to open your camera</p>
         </div>
         <div class="card-body">
- 
+
           <div id="cameraSection">
             <button id="startCamBtn">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -41,15 +42,15 @@
               </svg>
               Tap to Start Camera &amp; Scan QR
             </button>
- 
+
             <div class="viewfinder" id="viewfinder">
               <video id="video" autoplay playsinline muted></video>
               <div class="corners"><div class="frame"><span></span><div class="scanline"></div></div></div>
             </div>
           </div>
- 
+
           <div class="status info" id="statusMsg">Press the button above to allow camera access.</div>
- 
+
           <div class="user-card" id="userCard">
             <div class="avatar" id="uInitial">?</div>
             <div class="uinfo">
@@ -58,7 +59,7 @@
               <span id="uEmail" style="font-size:11px;opacity:0.7">—</span>
             </div>
           </div>
- 
+
           <span class="reason-label">Reason for visit:</span>
           <div class="reasons" id="reasonSection">
             <button class="rbtn" data-r="Reading">📖 Reading</button>
@@ -66,10 +67,16 @@
             <button class="rbtn" data-r="Use of Computer">💻 Computer</button>
             <button class="rbtn" data-r="Meeting">👥 Meeting</button>
           </div>
- 
+
           <button id="checkinBtn" disabled>Scan QR code first</button>
- 
+
           <div class="foot">Go back to <a href="admindashboard.html">Admin Dashboard</a></div>
         </div>
       </div>
     </main>
+
+    <canvas id="qrCanvas"></canvas>
+
+    <script src="js/qrscan.js"></script>
+  </body>
+</html>
