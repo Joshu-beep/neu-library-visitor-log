@@ -22,7 +22,8 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
       // ── Greeting ──
       const hr = parseInt(new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", hour: "numeric", hour12: false }));
-      document.getElementById("userGreeting").textContent = hr < 12 ? "Good morning," : hr < 17 ? "Good afternoon," : "Good evening,";
+      const firstName = userName.split(" ")[0];
+      document.getElementById("userGreeting").textContent = (hr < 12 ? "Good morning," : hr < 17 ? "Good afternoon," : "Good evening,") + " " + firstName;
 
       // ── Clock ──
       function updateClock() {
@@ -369,6 +370,80 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
       loadLastReason();
       loadProfilePhoto();
       loadAnalyticsChart();
+      loadVisitCount();
+      loadUpcomingNotices();
+      initDarkMode();
+      initKeyboardShortcuts();
+
+      // ── Visit count badge ──
+      async function loadVisitCount() {
+        const { count } = await supabase
+          .from("visit_logs").select("*", { count: "exact", head: true })
+          .eq("user_id", userId);
+        if (count > 0) {
+          const badge = document.getElementById("visitCountBadge");
+          badge.textContent = `${count} visit${count !== 1 ? "s" : ""}`;
+          badge.style.display = "inline-block";
+        }
+      }
+
+      // ── Upcoming notices ──
+      async function loadUpcomingNotices() {
+        const { data } = await supabase
+          .from("notices").select("message, type, event_date")
+          .eq("active", true)
+          .order("created_at", { ascending: false })
+          .limit(3);
+        if (!data?.length) return;
+        const card = document.getElementById("noticesCard");
+        const list = document.getElementById("noticesList");
+        list.innerHTML = data.map(n => {
+          const color = n.type === "event" ? "#3b82f6" : "#f59e0b";
+          const dateStr = n.event_date
+            ? ` · ${new Date(n.event_date + "T00:00:00").toLocaleDateString("en-PH", { month: "short", day: "numeric" })}`
+            : "";
+          return `<div class="notices-item">
+            <div class="notices-dot" style="background:${color};"></div>
+            <span style="color:#1e293b;font-weight:500;">${n.message}${dateStr}</span>
+          </div>`;
+        }).join("");
+        card.style.display = "block";
+      }
+
+      // ── Dark mode ──
+      function initDarkMode() {
+        const saved = localStorage.getItem("vl_dark");
+        if (saved === "1") document.body.classList.add("dark-mode");
+        updateDarkIcon();
+        document.getElementById("darkToggleBtn").addEventListener("click", () => {
+          document.body.classList.toggle("dark-mode");
+          localStorage.setItem("vl_dark", document.body.classList.contains("dark-mode") ? "1" : "0");
+          updateDarkIcon();
+        });
+      }
+      function updateDarkIcon() {
+        const dark = document.body.classList.contains("dark-mode");
+        document.getElementById("darkIcon").innerHTML = dark
+          ? '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
+          : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+      }
+
+      // ── Keyboard shortcuts ──
+      function initKeyboardShortcuts() {
+        const reasons = ["Reading", "Researching", "Use of Computer", "Meeting"];
+        document.addEventListener("keydown", (e) => {
+          if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+          if (alreadyLoggedId) return;
+          const n = parseInt(e.key);
+          if (n >= 1 && n <= 4) {
+            const opt = [...reasonOptions].find(o => o.dataset.reason === reasons[n - 1]);
+            if (opt) { opt.click(); }
+          }
+          if (e.key === "Enter" && !submitLogBtn.disabled) {
+            submitLogBtn.click();
+          }
+        });
+      }
 
       function showWelcomePopup() {
         const popup = document.getElementById("welcomePopup");
