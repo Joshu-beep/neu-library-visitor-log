@@ -293,7 +293,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
             showMessage("This account is blocked.", "#991b1b");
             resetBtn(); return;
           }
-          if (profile.role !== "admin" && profile.role !== "owner") {
+          if (profile.role?.toLowerCase() !== 'admin' && profile.role?.toLowerCase() !== 'owner') {
             showMessage("Access denied. You are not assigned as an admin.", "#991b1b");
             resetBtn(); return;
           }
