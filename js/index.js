@@ -103,13 +103,14 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
           clearTimeout(safetyTimer);
 
           if (error) {
+            clearTimeout(safetyTimer);
             const msg = error.message.toLowerCase();
-            if (msg.includes("email not confirmed")) {
-              // Auto-resend confirmation email and show a simple message
+            if (msg.includes("email not confirmed") || msg.includes("not confirmed")) {
               await supabase.auth.resend({ type: "signup", email });
-              showMessage("A confirmation link was sent to your email. Please check your inbox.", "#b45309");
-            } else if (msg.includes("invalid") || msg.includes("credentials") || msg.includes("password")) {
-              showMessage("Incorrect password. Please try again.", "#991b1b");
+              showMessage("Please confirm your email first. A new link has been sent.", "#b45309");
+            } else if (msg.includes("invalid login credentials") || msg.includes("invalid credentials")) {
+              // Could be wrong password OR unconfirmed email - try resending confirmation
+              showMessage("Invalid email or password. If you just registered, check your email for a confirmation link.", "#991b1b");
             } else {
               showMessage("Login failed: " + error.message, "#991b1b");
             }
@@ -301,14 +302,19 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
           // Authenticate with Supabase Auth
           const { data, error: authErr } = await supabase.auth.signInWithPassword({ email, password: pass });
           if (authErr) {
-            showMessage("Incorrect password. Please try again.", "#991b1b");
+            const m = authErr.message.toLowerCase();
+            if (m.includes("not confirmed") || m.includes("invalid login")) {
+              showMessage("Login failed — if email confirmation is on in Supabase, disable it under Authentication → Providers → Email.", "#991b1b");
+            } else {
+              showMessage("Incorrect password. Please try again.", "#991b1b");
+            }
             resetBtn(); return;
           }
 
-          // Store admin info and redirect
+          // Store admin info (always lowercase role) and redirect
           localStorage.setItem("adminEmail", email);
           localStorage.setItem("adminName", profile.name);
-          localStorage.setItem("adminRole", profile.role);
+          localStorage.setItem("adminRole", profile.role.toLowerCase());
           showMessage("Access Granted. Redirecting...", "#16a34a");
           setTimeout(() => { window.location.href = "admindashboard.html"; }, 1200);
 
