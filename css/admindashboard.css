@@ -41,11 +41,19 @@ body::before {
 /* ── Container ── */
 .container { max-width: 1600px; margin: 0 auto; padding: clamp(10px,1.4vh,18px) clamp(14px,1.8vw,26px); position: relative; z-index: 1; }
 
-/* ── Stats grid — 4 in a row ── */
-.stats-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: clamp(8px,1vw,14px); margin-bottom: clamp(10px,1.4vh,16px);
+/* ── Top row: 2x2 stats LEFT + right panels RIGHT ── */
+.top-row {
+  display: grid;
+  grid-template-columns: clamp(280px, 32vw, 440px) 1fr;
+  gap: clamp(10px,1.2vw,18px);
+  margin-bottom: clamp(10px,1.4vh,16px);
+  align-items: start;
 }
+.stats-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(8px,1vw,14px);
+}
+.right-panels { display: flex; flex-direction: column; gap: clamp(8px,1vw,14px); }
 .stat-card {
   background: var(--card); backdrop-filter: blur(8px);
   padding: clamp(10px,1.1vw,16px) clamp(12px,1.3vw,18px); border-radius: 12px;
@@ -65,8 +73,7 @@ body::before {
 .stat-info h3 { font-size: clamp(10px,0.85vw,12px); font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
 .stat-info p { font-size: clamp(18px,1.8vw,26px); font-weight: 500; color: var(--text); line-height: 1; }
 
-/* ── Dashboard row ── */
-.dashboard-row { display: grid; grid-template-columns: 3fr 2fr; gap: clamp(8px,1vw,14px); margin-bottom: clamp(10px,1.4vh,16px); }
+
 .panel { background: var(--card); backdrop-filter: blur(8px); border-radius: 14px; border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
 .panel-header { padding: clamp(9px,0.9vw,13px) clamp(14px,1.4vw,20px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
 .panel-header h3 { font-size: clamp(13px,1.1vw,15px); font-weight: 700; color: var(--text); }
@@ -143,8 +150,8 @@ tr:hover td { background: #f8fafc; }
 
 /* ── Responsive ── */
 @media (max-width: 1199px) {
-  .stats-grid { grid-template-columns: repeat(2,1fr); }
-  .dashboard-row { grid-template-columns: 1fr; }
+  .top-row { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(4,1fr); }
 }
 @media (max-width: 767px) {
   .welcome-text { display: none; }
