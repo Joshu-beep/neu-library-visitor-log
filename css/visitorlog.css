@@ -14,34 +14,34 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
 
 html, body { height: 100%; overflow: hidden; }
-body { background-color: var(--bg); background-image: url("/img/library.png"); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; }
+body { background-color: var(--bg); background-image: url("../img/visitorlog-bg.jpg"); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; }
 body { display: flex; flex-direction: column; }
 
 /* ── Navbar ── */
 .navbar {
   background: var(--blue); border-bottom: 5px solid var(--gold);
-  padding: 0 2vw; height: 52px; display: flex; justify-content: space-between;
+  padding: 0 2vw; height: 46px; display: flex; justify-content: space-between;
   align-items: center; color: #fff; flex-shrink: 0; z-index: 10; width: 100%;
 }
 .nav-left { display: flex; align-items: center; gap: 10px; }
 .nav-logo { width: clamp(24px, 2.5vw, 36px); height: clamp(24px, 2.5vw, 36px); object-fit: contain; border-radius: 4px; }
-.nav-title { font-size: clamp(14px, 1.4vw, 20px); font-weight: 700; }
+.nav-title { font-size: clamp(12px, 1.3vw, 16px); font-weight: 700; }
 .nav-clock { font-size: clamp(11px, 1vw, 14px); opacity: 0.85; font-variant-numeric: tabular-nums; }
 
 /* ── Workspace — fills full remaining height ── */
 .workspace {
   flex: 1;
   display: grid;
-  grid-template-columns: clamp(200px, 20vw, 270px) 1fr;
-  gap: clamp(8px, 1.2vw, 16px);
-  padding: clamp(8px, 1.2vw, 14px) clamp(10px, 1.6vw, 20px);
+  grid-template-columns: clamp(170px, 16vw, 220px) 1fr;
+  gap: clamp(6px, 0.8vw, 10px);
+  padding: clamp(6px, 0.8vw, 10px) clamp(8px, 1vw, 12px);
   overflow: hidden;
   min-height: 0;
   align-items: stretch;
 }
 
 /* ── Left panel ── */
-.left-panel { display: flex; flex-direction: column; gap: clamp(6px, 0.8vw, 10px); height: 100%; overflow: hidden; }
+.left-panel { display: flex; flex-direction: column; gap: clamp(4px, 0.5vw, 7px); height: 100%; overflow: hidden; }
 
 /* Panel glass effect — bg image shows through */
 .left-panel > *,
@@ -57,20 +57,20 @@ body { display: flex; flex-direction: column; }
 /* Profile card — horizontal row */
 .profile-card {
   background: var(--blue); border-radius: 14px;
-  padding: clamp(10px, 1.2vw, 14px) clamp(12px, 1.4vw, 16px);
+  padding: clamp(8px, 0.9vw, 11px) clamp(10px, 1.1vw, 13px);
   color: white; display: flex; flex-direction: row;
-  align-items: center; gap: clamp(10px, 1.2vw, 14px); flex-shrink: 0;
+  align-items: center; gap: clamp(8px, 0.9vw, 11px); flex-shrink: 0;
 }
 .avatar {
-  width: clamp(38px, 4vw, 50px); height: clamp(38px, 4vw, 50px);
+  width: clamp(30px, 3vw, 38px); height: clamp(30px, 3vw, 38px);
   border-radius: 50%; background: rgba(255,255,255,0.18);
   border: 3px solid var(--gold); flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: clamp(15px, 1.7vw, 22px); font-weight: 700;
+  font-size: clamp(12px, 1.3vw, 16px); font-weight: 700;
 }
 .profile-info { min-width: 0; flex: 1; text-align: left; }
 .profile-greeting { font-size: clamp(10px, 0.85vw, 12px); opacity: 0.7; margin-bottom: 2px; }
-.profile-name { font-size: clamp(12px, 1.2vw, 15px); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.profile-name { font-size: clamp(11px, 1vw, 13px); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .profile-email { font-size: clamp(10px, 0.8vw, 11px); opacity: 0.6; margin-bottom: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .profile-badge { display: inline-block; background: var(--gold); color: #001f54; font-size: clamp(9px, 0.75vw, 10px); font-weight: 700; padding: 2px 9px; border-radius: 20px; }
 .hours-pill {
@@ -85,18 +85,18 @@ body { display: flex; flex-direction: column; }
 /* Session card */
 .session-card {
   background: #f0fdf4; border: 1.5px solid #bbf7d0;
-  border-radius: 12px; padding: clamp(8px, 1vw, 14px) clamp(10px, 1.2vw, 16px);
+  border-radius: 10px; padding: clamp(6px, 0.8vw, 10px) clamp(8px, 1vw, 12px);
   flex-shrink: 0; display: none;
 }
 .session-card.show { display: block; }
 .session-label { font-size: clamp(10px, 0.85vw, 12px); font-weight: 700; color: #16a34a; margin-bottom: 2px; }
-.session-timer { font-size: clamp(18px, 1.8vw, 26px); font-weight: 700; color: #15803d; font-variant-numeric: tabular-nums; line-height: 1; }
+.session-timer { font-size: clamp(15px, 1.5vw, 20px); font-weight: 700; color: #15803d; font-variant-numeric: tabular-nums; line-height: 1; }
 .session-since { font-size: clamp(10px, 0.85vw, 12px); color: #4ade80; margin-top: 3px; }
 
 /* Streak card */
 .streak-card {
   background: #fff7ed; border: 1.5px solid #fed7aa;
-  border-radius: 12px; padding: clamp(7px, 0.9vw, 12px) clamp(10px, 1.2vw, 16px);
+  border-radius: 10px; padding: clamp(5px, 0.7vw, 9px) clamp(8px, 1vw, 12px);
   display: none; align-items: center; gap: 10px; flex-shrink: 0;
 }
 .streak-card.show { display: flex; }
@@ -109,7 +109,7 @@ body { display: flex; flex-direction: column; }
 /* Visit history */
 .history-card {
   background: white; border-radius: 12px;
-  padding: clamp(8px, 1vw, 12px) clamp(10px, 1.2vw, 14px);
+  padding: clamp(6px, 0.8vw, 10px) clamp(8px, 1vw, 12px);
   flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column;
   border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
@@ -134,10 +134,10 @@ body { display: flex; flex-direction: column; }
 }
 
 .right-header {
-  padding: clamp(8px, 1vw, 12px) clamp(14px, 1.8vw, 20px) clamp(6px, 0.8vw, 10px);
+  padding: clamp(6px, 0.7vw, 9px) clamp(10px, 1.2vw, 14px) clamp(4px, 0.5vw, 7px);
   border-bottom: 1px solid var(--border); flex-shrink: 0;
 }
-.right-header h2 { font-size: clamp(14px, 1.3vw, 18px); font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.right-header h2 { font-size: clamp(12px, 1.1vw, 14px); font-weight: 700; color: var(--text); margin-bottom: 2px; }
 .right-header p { font-size: clamp(11px, 1vw, 13px); color: var(--muted); }
 
 .already-banner {
@@ -151,7 +151,7 @@ body { display: flex; flex-direction: column; }
 
 /* Reason wrap stretches to fill all remaining height */
 .reason-wrap {
-  padding: clamp(6px, 0.8vw, 10px) clamp(14px, 1.8vw, 20px);
+  padding: clamp(4px, 0.5vw, 7px) clamp(10px, 1.2vw, 14px);
   flex: 1; display: flex; flex-direction: column; min-height: 0;
 }
 .reason-label { font-size: clamp(11px, 1vw, 13px); font-weight: 600; color: var(--muted); margin-bottom: clamp(8px, 1vw, 12px); flex-shrink: 0; }
@@ -161,7 +161,7 @@ body { display: flex; flex-direction: column; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: clamp(6px, 0.8vw, 10px);
+  gap: clamp(5px, 0.6vw, 8px);
   flex: 1;
   min-height: 0;
 }
@@ -169,26 +169,26 @@ body { display: flex; flex-direction: column; }
   border: 1.5px solid var(--border); border-radius: 14px;
   cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  gap: clamp(5px, 0.7vw, 10px); background: #fff;
-  padding: clamp(8px, 1vw, 14px); overflow: hidden;
+  gap: clamp(4px, 0.5vw, 6px); background: #fff;
+  padding: clamp(6px, 0.7vw, 9px); overflow: hidden;
   min-height: 0;
 }
 .reason-option:hover { border-color: #94a3b8; background: #f8fafc; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
 .reason-option.selected { border-color: var(--blue); background: #eff4ff; box-shadow: 0 4px 16px rgba(0,31,84,0.14); border-width: 2px; }
 .reason-option.last-used { border-color: var(--gold); }
-.reason-option svg { width: clamp(22px, 2.4vw, 36px); height: clamp(22px, 2.4vw, 36px); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.reason-option svg { width: clamp(16px, 1.6vw, 22px); height: clamp(16px, 1.6vw, 22px); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 .icon-reading svg { stroke: var(--orange); }
 .icon-researching svg { stroke: var(--indigo); }
 .icon-computer svg { stroke: var(--purple); }
 .icon-meeting svg { stroke: var(--green); }
-.reason-option .reason-name { font-size: clamp(11px, 1.1vw, 15px); font-weight: 600; color: var(--text); text-align: center; }
+.reason-option .reason-name { font-size: clamp(10px, 0.85vw, 11px); font-weight: 600; color: var(--text); text-align: center; }
 .last-used-tag { font-size: 9px; background: #fef3c7; color: #92400e; padding: 2px 7px; border-radius: 10px; font-weight: 700; }
 
 /* Buttons */
-.actions { padding: clamp(6px, 0.7vw, 8px) clamp(14px, 1.8vw, 20px) clamp(8px, 1vw, 12px); display: flex; flex-direction: column; gap: clamp(7px, 0.9vw, 10px); flex-shrink: 0; }
+.actions { padding: clamp(4px, 0.5vw, 6px) clamp(10px, 1.2vw, 14px) clamp(6px, 0.7vw, 9px); display: flex; flex-direction: column; gap: clamp(7px, 0.9vw, 10px); flex-shrink: 0; }
 .btn-submit {
-  width: 100%; padding: clamp(9px, 1vw, 13px); border-radius: 10px; border: none;
-  font-size: clamp(12px, 1.1vw, 14px); font-weight: 700; color: #fff;
+  width: 100%; padding: clamp(7px, 0.8vw, 10px); border-radius: 9px; border: none;
+  font-size: clamp(11px, 0.95vw, 12px); font-weight: 700; color: #fff;
   background: var(--blue); cursor: pointer; transition: all 0.2s;
 }
 .btn-submit:hover:not(:disabled) { background: #00153a; transform: translateY(-1px); }
@@ -196,15 +196,15 @@ body { display: flex; flex-direction: column; }
 
 .btn-row { display: flex; gap: clamp(6px, 0.8vw, 10px); }
 .btn-qr {
-  flex: 1; padding: clamp(8px, 0.9vw, 11px); border-radius: 8px;
-  font-size: clamp(11px, 0.95vw, 12px); font-weight: 700;
+  flex: 1; padding: clamp(6px, 0.7vw, 9px); border-radius: 7px;
+  font-size: clamp(10px, 0.85vw, 11px); font-weight: 700;
   cursor: pointer; border: 1.5px solid var(--gold); background: #fff; color: #b45309;
   display: flex; align-items: center; justify-content: center; gap: 5px; transition: all 0.2s;
 }
 .btn-qr:hover { background: #fffbeb; }
 .btn-logout {
-  flex: 1; padding: clamp(8px, 0.9vw, 11px); border-radius: 8px;
-  font-size: clamp(11px, 0.95vw, 12px); font-weight: 700;
+  flex: 1; padding: clamp(6px, 0.7vw, 9px); border-radius: 7px;
+  font-size: clamp(10px, 0.85vw, 11px); font-weight: 700;
   cursor: pointer; border: 1.5px solid var(--blue); background: #fff; color: var(--blue);
   display: flex; align-items: center; justify-content: center; gap: 5px; transition: all 0.2s;
 }
@@ -285,7 +285,7 @@ body { display: flex; flex-direction: column; }
 }
 
 @media (max-width: 639px) {
-  .navbar { padding: 0 14px; height: 52px; }
+  .navbar { padding: 0 14px; height: 46px; }
   .nav-title { font-size: 14px; }
   .workspace { padding: 10px 12px; gap: 10px; }
   .profile-card { padding: 12px 14px; gap: 10px; }
@@ -310,6 +310,6 @@ body { display: flex; flex-direction: column; }
 }
 
 @media (min-width: 1600px) {
-  .workspace { grid-template-columns: clamp(280px, 18vw, 340px) 1fr; padding: 20px 32px; gap: 20px; }
+  .workspace { grid-template-columns: clamp(170px, 16vw, 220px) 1fr; padding: 20px 32px; gap: 20px; }
   .navbar { padding: 0 3vw; height: 68px; }
 }
