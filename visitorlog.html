@@ -9,7 +9,7 @@
   </head>
   <body>
     <div id="msgBox"></div>
- 
+
     <!-- QR Modal -->
     <div id="qrModal">
       <div class="qr-box">
@@ -27,7 +27,7 @@
         <button class="btn-cl" onclick="document.getElementById('qrModal').style.display='none'">Close</button>
       </div>
     </div>
- 
+
     <!-- Navbar -->
     <nav class="navbar">
       <div class="nav-left">
@@ -36,13 +36,13 @@
       </div>
       <span class="nav-clock" id="navClock">—</span>
     </nav>
- 
+
     <!-- Landscape workspace -->
     <div class="workspace">
- 
+
       <!-- LEFT PANEL -->
       <div class="left-panel">
- 
+
         <!-- Profile -->
         <div class="profile-card">
           <div class="avatar" id="userAvatar">?</div>
@@ -56,14 +56,14 @@
             <div class="hours-pill" id="hoursPill">—</div>
           </div>
         </div>
- 
+
         <!-- Session timer (shown if already inside) -->
         <div class="session-card" id="sessionCard">
           <div class="session-label">✓ Currently inside the library</div>
           <div class="session-timer" id="sessionTimer">0m 0s</div>
           <div class="session-since" id="sessionSince">—</div>
         </div>
- 
+
         <!-- Streak -->
         <div class="streak-card" id="streakCard">
           <span class="streak-fire">🔥</span>
@@ -72,7 +72,7 @@
             <div class="streak-sub" id="streakSub"></div>
           </div>
         </div>
- 
+
         <!-- Visit history -->
         <div class="history-card">
           <div class="history-title">Recent Visits</div>
@@ -80,17 +80,17 @@
             <div class="history-empty">No visit history yet.</div>
           </div>
         </div>
- 
+
       </div>
- 
+
       <!-- RIGHT PANEL -->
       <div class="right-panel">
- 
+
         <div class="right-header">
           <h2>Check In to the Library</h2>
           <p>Select your reason for visiting today</p>
         </div>
- 
+
         <!-- Already inside banner on right -->
         <div class="already-banner" id="alreadyBanner">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
@@ -99,7 +99,7 @@
             <span id="alreadySince">—</span>
           </div>
         </div>
- 
+
         <!-- Reason grid -->
         <div class="reason-wrap">
           <div class="reason-label">What will you be doing today?</div>
@@ -122,7 +122,7 @@
             </div>
           </div>
         </div>
- 
+
         <!-- Action buttons -->
         <div class="actions">
           <button id="submitLogBtn" class="btn-submit" disabled>Log Visit</button>
@@ -137,14 +137,14 @@
             </button>
           </div>
         </div>
- 
+
       </div>
     </div>
- 
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <script type="module">
 
-      <!-- Welcome popup -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="js/visitorlog.js" type="module"></script>
+
+    <!-- Welcome popup -->
     <div id="welcomePopup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);z-index:3000;align-items:center;justify-content:center;">
       <div style="background:white;border-radius:20px;padding:40px 48px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.25);max-width:360px;width:90%;animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);">
         <div style="width:68px;height:68px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
@@ -161,4 +161,3 @@
     <style>@keyframes popIn { from{transform:scale(0.8);opacity:0;} to{transform:scale(1);opacity:1;} }</style>
   </body>
 </html>
- 
