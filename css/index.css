@@ -224,11 +224,17 @@ select#regProgram:focus, select#regProgramFaculty:focus { border-color: var(--pr
 
 /* ── Responsive ── */
 
-/* Tablet and smaller — panel goes full width, bg image hidden behind it */
+/* Tablet and smaller — announcement goes inline at top of login panel */
 @media (max-width: 768px) {
   .login-wrapper { width: 100%; max-width: 100%; box-shadow: none; }
-  .announce-panel { display: none !important; }
   .card-body { padding: 20px 20px; }
+  .announce-panel {
+    position: static; width: 100%; filter: none; z-index: auto;
+    border-bottom: 2px solid var(--accent-gold);
+  }
+  .announce-toggle { border-radius: 0; font-size: 12px; padding: 9px 14px; }
+  .announce-panel.open .announce-toggle { border-radius: 0; border-bottom: 2px solid var(--accent-gold); }
+  .announce-body { border-radius: 0; border-left: none; border-right: none; border-bottom: none; max-height: 160px; }
 }
 
 /* Small mobile */
