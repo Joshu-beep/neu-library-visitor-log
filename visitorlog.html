@@ -35,6 +35,9 @@
         <span class="nav-title">NEU Library Visitor Log</span>
       </div>
       <span class="nav-clock" id="navClock">—</span>
+      <button class="dark-toggle" id="darkToggleBtn" title="Toggle dark mode">
+        <svg id="darkIcon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
     </nav>
 
     <!-- Landscape workspace -->
@@ -60,7 +63,14 @@
               <span class="profile-badge" id="displayUserProgram">—</span>
             </div>
             <div class="hours-pill" id="hoursPill">—</div>
+            <div class="visit-count-badge" id="visitCountBadge" style="display:none;"></div>
           </div>
+        </div>
+
+        <!-- Upcoming notices -->
+        <div class="notices-card" id="noticesCard" style="display:none;">
+          <div class="history-title">Library Notices</div>
+          <div id="noticesList"></div>
         </div>
 
         <!-- Session timer (shown if already inside) -->
@@ -83,7 +93,11 @@
         <div class="history-card">
           <div class="history-title">Recent Visits</div>
           <div class="history-list" id="visitHistoryList">
-            <div class="history-empty">No visit history yet.</div>
+            <div class="history-empty" style="padding:16px 0;text-align:center;">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 6px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <div style="font-size:11px;color:#94a3b8;font-weight:600;">No visits yet</div>
+              <div style="font-size:10px;color:#cbd5e1;margin-top:2px;">Your history will appear here</div>
+            </div>
           </div>
         </div>
 
@@ -103,32 +117,33 @@
           <p>Select your reason for visiting today</p>
         </div>
 
-        <!-- Already inside banner on right -->
-        <div class="already-banner" id="alreadyBanner">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          <div>
-            <p>You are already checked in</p>
-            <span id="alreadySince">—</span>
-          </div>
+        <!-- Already inside overlay -->
+        <div class="inside-overlay" id="insideOverlay">
+          <div class="inside-overlay-title">✓ You are currently inside</div>
+          <div class="inside-overlay-sub" id="insideOverlaySub">—</div>
         </div>
 
         <!-- Reason grid -->
         <div class="reason-wrap">
           <div class="reason-label">What will you be doing today?</div>
-          <div class="reason-grid">
+          <div class="reason-grid" id="reasonGrid">
             <div class="reason-option icon-reading" data-reason="Reading">
+              <span class="kbd-hint">1</span>
               <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
               <span class="reason-name">Reading</span>
             </div>
             <div class="reason-option icon-researching" data-reason="Researching">
+              <span class="kbd-hint">2</span>
               <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><path d="M10 2v8l3-3 3 3V2"></path></svg>
               <span class="reason-name">Researching</span>
             </div>
             <div class="reason-option icon-computer" data-reason="Use of Computer">
+              <span class="kbd-hint">3</span>
               <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
               <span class="reason-name">Use of Computer</span>
             </div>
             <div class="reason-option icon-meeting" data-reason="Meeting">
+              <span class="kbd-hint">4</span>
               <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
               <span class="reason-name">Meeting</span>
             </div>
