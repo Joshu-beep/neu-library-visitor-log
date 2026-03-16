@@ -309,6 +309,31 @@ body::before {
 .checkmark-tick { stroke-dasharray: 60; stroke-dashoffset: 60; transition: stroke-dashoffset 0.4s ease 0.4s; }
 .checkmark-tick.animate { stroke-dashoffset: 0; }
 
+/* ── Dark mode (html.dark) ── */
+body.dark-mode { background-color: #0a1628; }
+body.dark-mode::before { background: rgba(0,0,0,0.5); }
+body.dark-mode .right-panel { background: rgba(15,23,42,0.97); border-color: #1e293b; }
+body.dark-mode .right-header h2 { color: #f1f5f9; }
+body.dark-mode .right-header p, body.dark-mode .reason-label { color: #94a3b8; }
+body.dark-mode .history-card, body.dark-mode .analytics-card, body.dark-mode .notices-card { background: rgba(15,23,42,0.95); border-color: #1e293b; }
+body.dark-mode .session-card { background: rgba(5,46,22,0.9); border-color: #166534; }
+body.dark-mode .streak-card { background: rgba(67,20,7,0.8); border-color: #9a3412; }
+body.dark-mode .history-item { background: #1e293b; border-color: #334155; }
+body.dark-mode .h-reason { color: #f1f5f9; }
+body.dark-mode .h-dur { background: #0f172a; color: #94a3b8; }
+body.dark-mode .history-title { color: #475569; }
+body.dark-mode .icon-reading   { background: #431407; border-color: #9a3412; }
+body.dark-mode .icon-researching { background: #1e3a5f; border-color: #1d4ed8; }
+body.dark-mode .icon-computer  { background: #2e1065; border-color: #7c3aed; }
+body.dark-mode .icon-meeting   { background: #052e16; border-color: #166534; }
+body.dark-mode .reason-option .reason-name { color: #f1f5f9; }
+body.dark-mode .btn-qr { background: #1e293b; color: #fbbf24; border-color: #f59e0b; }
+body.dark-mode .btn-logout { background: #1e293b; color: #93c5fd; border-color: #3b82f6; }
+body.dark-mode .btn-submit:disabled { background: #334155; }
+body.dark-mode #msgBox { background: #1e293b; }
+body.dark-mode .notices-item span { color: #f1f5f9; }
+body.dark-mode .inside-overlay { background: linear-gradient(135deg,#052e16,#14532d); border-color: #16a34a; }
+
 /* ── Responsive ── */
 @media (max-width: 1100px) {
   .workspace { grid-template-columns: clamp(170px, 16vw, 220px) 1fr clamp(170px, 16vw, 220px); }
