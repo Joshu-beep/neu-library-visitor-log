@@ -120,25 +120,6 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
           document.getElementById('today-stat').textContent = todayCount   ?? 0;
           document.getElementById('week-stat').textContent  = weekCount    ?? 0;
           document.getElementById('total-stat').textContent = totalCount   ?? 0;
-
-          // Avg visit duration (last 30 days, completed visits only)
-          const monthAgo = new Date(Date.now() - 30 * 86400000).toISOString();
-          const { data: completedLogs } = await supabase
-            .from('visit_logs').select('time_in, time_out')
-            .eq('status', 'logged_out').gte('time_in', monthAgo).not('time_out', 'is', null);
-          if (completedLogs?.length) {
-            const avgMs = completedLogs.reduce((s, v) =>
-              s + (new Date(v.time_out) - new Date(v.time_in)), 0) / completedLogs.length;
-            const avgMin = Math.round(avgMs / 60000);
-            const avgEl = document.getElementById('avg-stat');
-            if (avgEl) avgEl.textContent = avgMin >= 60
-              ? `${Math.floor(avgMin/60)}h ${avgMin%60}m`
-              : `${avgMin}m`;
-          } else {
-            const avgEl = document.getElementById('avg-stat');
-            if (avgEl) avgEl.textContent = '—';
-          }
-
         } catch (err) {
           console.error('Stats error:', err);
           ['live-stat','today-stat','week-stat','total-stat'].forEach(id => {
@@ -170,10 +151,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
             <td><span class="badge badge-program" style="font-size:10px">${(r.users?.program || '—').substring(0,30)}</span></td>
             <td>${phTime(r.time_in)}</td>
             <td>
-              <button onclick="forceLogoutUser('${r.id}', '${r.users?.name || 'this user'}')"
-                style="padding:4px 10px;background:#fef2f2;color:#ef4444;border:1px solid #fecaca;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;">
-                Force Logout
-              </button>
+              <button class="btn-force-logout" onclick="forceLogoutUser('${r.id}', '${(r.users?.name || 'User').replace(/'/g, '\\'')}')">Force Logout</button>
             </td>
           </tr>`).join('');
       }
