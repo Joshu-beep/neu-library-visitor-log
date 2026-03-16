@@ -340,17 +340,55 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
       });
 
       // ── Library hours ──
+      const SCHEDULE = {
+        0: null,
+        1: { open: 7, close: 21 }, 2: { open: 7, close: 21 },
+        3: { open: 7, close: 21 }, 4: { open: 7, close: 21 },
+        5: { open: 7, close: 21 }, 6: { open: 8, close: 17 },
+      };
+
+      function getNowPH() {
+        return new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+      }
+
+      // ── Auto-logout at closing time ──
+      // Checks every minute. When the library closes and user is still inside,
+      // logs them out automatically and redirects to login.
+      function startClosingTimeWatcher() {
+        async function checkClosingTime() {
+          if (!alreadyLoggedId) return; // not inside, nothing to do
+          const now = getNowPH();
+          const hrs = SCHEDULE[now.getDay()];
+          // Trigger at exactly closing hour (minute 0) or any minute past closing
+          if (!hrs || now.getHours() >= hrs.close) {
+            const logId = alreadyLoggedId || localStorage.getItem("currentLogId");
+            if (logId) {
+              // Set time_out to the exact closing time, not now (could be minutes past)
+              const closingTime = new Date(now);
+              closingTime.setHours(hrs ? hrs.close : now.getHours(), 0, 0, 0);
+              await supabase.from("visit_logs").update({
+                status: "logged_out",
+                time_out: closingTime.toISOString()
+              }).eq("id", logId);
+            }
+            await supabase.auth.signOut();
+            localStorage.clear();
+            // Show a brief message before redirecting
+            showMessage("Library is now closed. You have been automatically logged out.");
+            setTimeout(() => { window.location.href = "index.html"; }, 2500);
+          }
+        }
+        // Check immediately on load (handles case where user opens page after closing)
+        checkClosingTime();
+        // Then check every minute
+        setInterval(checkClosingTime, 60 * 1000);
+      }
+
       function updateHoursPill() {
-        const schedule = {
-          0: null,
-          1: { open: 7, close: 21 }, 2: { open: 7, close: 21 },
-          3: { open: 7, close: 21 }, 4: { open: 7, close: 21 },
-          5: { open: 7, close: 21 }, 6: { open: 8, close: 17 },
-        };
-        const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+        const now = getNowPH();
         const day = now.getDay(), h = now.getHours();
         const pill = document.getElementById("hoursPill");
-        const hrs = schedule[day];
+        const hrs = SCHEDULE[day];
         if (!hrs) { pill.textContent = "Closed today"; pill.className = "hours-pill closed"; }
         else if (h >= hrs.open && h < hrs.close) {
           const c = hrs.close > 12 ? `${hrs.close-12}:00 PM` : `${hrs.close}:00 AM`;
@@ -405,6 +443,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
       loadVisitCount();
       loadUpcomingNotices();
       initKeyboardShortcuts();
+      startClosingTimeWatcher();
 
       // ── Visit count badge ──
       async function loadVisitCount() {
