@@ -158,10 +158,28 @@ body::before {
 .right-header p { font-size: clamp(11px, 0.95vw, 12px); color: var(--muted); }
 
 /* ── Already inside overlay ── */
-.inside-overlay { display: none; margin: clamp(8px,1vw,12px) clamp(14px,1.6vw,20px); background: linear-gradient(135deg,#f0fdf4,#dcfce7); border: 2px solid #22c55e; border-radius: 10px; padding: clamp(10px,1.2vw,14px) clamp(12px,1.4vw,16px); text-align: center; flex-shrink: 0; }
-.inside-overlay.show { display: block; }
-.inside-overlay-title { font-size: 14px; font-weight: 700; color: #15803d; margin-bottom: 4px; }
-.inside-overlay-sub { font-size: 12px; color: #16a34a; }
+.inside-overlay {
+  display: none;
+  margin: clamp(8px,1vw,12px) clamp(14px,1.6vw,20px);
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border: 2px solid #16a34a;
+  border-radius: 10px;
+  padding: clamp(12px,1.4vw,16px) clamp(14px,1.6vw,18px);
+  flex-shrink: 0;
+  display: none;
+  align-items: center;
+  gap: 12px;
+}
+.inside-overlay.show {
+  display: flex;
+}
+.inside-overlay-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #16a34a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.inside-overlay-icon svg { stroke: white; }
+.inside-overlay-title { font-size: 13px; font-weight: 700; color: #15803d; margin-bottom: 3px; }
+.inside-overlay-sub { font-size: 11px; color: #16a34a; }
 
 /* ── Reason wrap & grid ── */
 .reason-wrap { padding: clamp(10px,1.1vw,14px) clamp(14px,1.6vw,20px); display: flex; flex-direction: column; }
