@@ -410,6 +410,8 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
         card.style.display = "block";
       }
 
+
+
       // ── Dark mode ──
       function initDarkMode() {
         const saved = localStorage.getItem("vl_dark");
