@@ -1,29 +1,29 @@
-      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
       const SUPABASE_URL = 'https://ruajjuxabwfqpawpjosl.supabase.co';
       const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1YWpqdXhhYndmcXBhd3Bqb3NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0NTg0MjksImV4cCI6MjA4OTAzNDQyOX0.O1ZbG4vC6q4DxQKTq664i3e4xwUYcvgVDOsuNMDNK4I';
       const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
- 
+
       const userId      = localStorage.getItem("userId");
       const userName    = localStorage.getItem("userName")    || "Guest";
       const userEmail   = localStorage.getItem("userEmail")   || "—";
       const userProgram = localStorage.getItem("userProgram") || "—";
       if (!userId) { window.location.href = "index.html"; }
- 
+
       const reasonOptions = document.querySelectorAll(".reason-option");
       const submitLogBtn  = document.getElementById("submitLogBtn");
       let selectedReason  = null;
       let alreadyLoggedId = null;
- 
+
       // ── User details ──
       document.getElementById("displayUserName").textContent    = userName;
       document.getElementById("displayUserEmail").textContent   = userEmail;
       document.getElementById("displayUserProgram").textContent = userProgram;
       document.getElementById("userAvatar").textContent = userName.charAt(0).toUpperCase();
- 
+
       // ── Greeting ──
       const hr = parseInt(new Date().toLocaleString("en-PH", { timeZone: "Asia/Manila", hour: "numeric", hour12: false }));
       document.getElementById("userGreeting").textContent = hr < 12 ? "Good morning," : hr < 17 ? "Good afternoon," : "Good evening,";
- 
+
       // ── Clock in navbar ──
       function updateClock() {
         document.getElementById("navClock").textContent = new Date().toLocaleString("en-PH", {
@@ -32,7 +32,7 @@
         });
       }
       updateClock(); setInterval(updateClock, 1000);
- 
+
       // ── Session timer ──
       function startSessionTimer(fromISO) {
         const start = new Date(fromISO);
@@ -44,7 +44,7 @@
         }
         tick(); setInterval(tick, 1000);
       }
- 
+
       // ── Duration helper ──
       function calcDuration(a, b) {
         if (!b) return "—";
@@ -52,7 +52,7 @@
         const h = Math.floor(m / 60);
         return h > 0 ? `${h}h ${m % 60}m` : `${m}m`;
       }
- 
+
       // ── Check if already inside ──
       async function checkAlreadyInside() {
         const todayStart = new Date(); todayStart.setHours(0,0,0,0);
@@ -61,11 +61,11 @@
           .eq("user_id", userId).eq("status", "inside")
           .gte("time_in", todayStart.toISOString())
           .order("time_in", { ascending: false }).limit(1).maybeSingle();
- 
+
         if (data) {
           alreadyLoggedId = data.id;
           localStorage.setItem("currentLogId", data.id);
- 
+
           // Show session card on left
           document.getElementById("sessionCard").classList.add("show");
           const timeIn = new Date(data.time_in).toLocaleTimeString("en-PH", {
@@ -74,13 +74,13 @@
           document.getElementById("sessionSince").textContent =
             `Checked in at ${timeIn} for "${data.reason}"`;
           startSessionTimer(data.time_in);
- 
+
           // Show already banner on right
           const banner = document.getElementById("alreadyBanner");
           banner.classList.add("show");
           document.getElementById("alreadySince").textContent =
             `Checked in at ${timeIn} for "${data.reason}"`;
- 
+
           // Disable form
           submitLogBtn.disabled = true;
           submitLogBtn.textContent = "Already checked in";
@@ -88,17 +88,17 @@
           reasonOptions.forEach(o => { o.style.pointerEvents = "none"; o.style.opacity = "0.45"; });
         }
       }
- 
+
       // ── Announcements removed from visitor log ──
       // (shown on login page instead)
- 
+
       // ── Visit history ──
       async function loadVisitHistory() {
         const { data } = await supabase
           .from("visit_logs").select("reason, time_in, time_out")
           .eq("user_id", userId).eq("status", "logged_out")
           .order("time_in", { ascending: false }).limit(5);
- 
+
         const list = document.getElementById("visitHistoryList");
         if (!data?.length) return;
         list.innerHTML = data.map(v => {
@@ -111,7 +111,7 @@
           </div>`;
         }).join("");
       }
- 
+
       // ── Streak ──
       async function loadStreak() {
         const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
@@ -126,7 +126,7 @@
         document.getElementById("streakSub").textContent =
           days >= 10 ? "Amazing dedication! 🎉" : days >= 5 ? "Great consistency!" : days >= 2 ? "Keep coming back!" : "Welcome! See you again soon.";
       }
- 
+
       // ── Last used reason ──
       async function loadLastReason() {
         const { data } = await supabase
@@ -141,7 +141,7 @@
           }
         }
       }
- 
+
       // ── QR Code ──
       function generateQR(id, size) {
         const el = document.getElementById(id);
@@ -152,21 +152,21 @@
           correctLevel: QRCode.CorrectLevel.M
         });
       }
- 
+
       document.getElementById("showQrBtn").addEventListener("click", () => {
         generateQR("qrModalCanvas", 190);
         document.getElementById("qrModalName").textContent    = userName;
         document.getElementById("qrModalProgram").textContent = userProgram;
         document.getElementById("qrModal").style.display = "flex";
       });
- 
+
       document.getElementById("downloadQrBtn").addEventListener("click", () => {
         // Get the QR image source
         const qrCanvas = document.querySelector("#qrModalCanvas canvas");
         const qrImg    = document.querySelector("#qrModalCanvas img");
         const qrSrc    = qrCanvas ? qrCanvas.toDataURL("image/png") : qrImg?.src;
         if (!qrSrc) return;
- 
+
         // Build a full card on an offscreen canvas matching the QR modal design
         const W = 400, H = 520;
         const offscreen = document.createElement("canvas");
@@ -174,23 +174,23 @@
         offscreen.height = H * 2;
         const ctx = offscreen.getContext("2d");
         ctx.scale(2, 2);
- 
+
         // White background with rounded corners
         ctx.fillStyle = "#ffffff";
         ctx.beginPath();
         ctx.roundRect(0, 0, W, H, 20);
         ctx.fill();
- 
+
         // Navy header bar
         ctx.fillStyle = "#001f54";
         ctx.beginPath();
         ctx.roundRect(0, 0, W, 70, [20, 20, 0, 0]);
         ctx.fill();
- 
+
         // Gold accent line
         ctx.fillStyle = "#f59e0b";
         ctx.fillRect(0, 68, W, 4);
- 
+
         // Header text
         ctx.fillStyle = "#ffffff";
         ctx.font = "bold 18px 'Segoe UI', sans-serif";
@@ -199,13 +199,13 @@
         ctx.font = "13px 'Segoe UI', sans-serif";
         ctx.fillStyle = "rgba(255,255,255,0.75)";
         ctx.fillText("NEU Library Visitor Management System", W / 2, 54);
- 
+
         // Draw QR inside a rounded white card with border
         const qrSize = 220;
         const qrX = (W - qrSize) / 2;
         const qrY = 90;
         const pad = 14;
- 
+
         ctx.fillStyle = "#f8fafc";
         ctx.strokeStyle = "#e2e8f0";
         ctx.lineWidth = 1.5;
@@ -213,12 +213,12 @@
         ctx.roundRect(qrX - pad, qrY - pad, qrSize + pad * 2, qrSize + pad * 2, 14);
         ctx.fill();
         ctx.stroke();
- 
+
         const drawCard = () => {
           const img = new Image();
           img.onload = () => {
             ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
- 
+
             // Divider
             ctx.strokeStyle = "#e2e8f0";
             ctx.lineWidth = 1;
@@ -226,28 +226,28 @@
             ctx.moveTo(40, qrY + qrSize + pad + 20);
             ctx.lineTo(W - 40, qrY + qrSize + pad + 20);
             ctx.stroke();
- 
+
             // Name
             ctx.fillStyle = "#001f54";
             ctx.font = "bold 20px 'Segoe UI', sans-serif";
             ctx.textAlign = "center";
             ctx.fillText(userName, W / 2, qrY + qrSize + pad + 48);
- 
+
             // Program
             ctx.fillStyle = "#64748b";
             ctx.font = "14px 'Segoe UI', sans-serif";
             ctx.fillText(userProgram, W / 2, qrY + qrSize + pad + 70);
- 
+
             // Footer
             ctx.fillStyle = "#001f54";
             ctx.beginPath();
             ctx.roundRect(30, H - 66, W - 60, 42, 10);
             ctx.fill();
- 
+
             ctx.fillStyle = "#ffffff";
             ctx.font = "bold 14px 'Segoe UI', sans-serif";
             ctx.fillText("New Era University Library", W / 2, H - 40);
- 
+
             // Download
             const a = document.createElement("a");
             a.href = offscreen.toDataURL("image/png");
@@ -258,7 +258,7 @@
         };
         drawCard();
       });
- 
+
       // ── Reason selection ──
       reasonOptions.forEach(option => {
         option.addEventListener("click", () => {
@@ -269,25 +269,25 @@
           submitLogBtn.disabled = false;
         });
       });
- 
+
       function showMessage(msg) {
         const box = document.getElementById("msgBox");
         box.textContent = msg; box.style.display = "block";
         setTimeout(() => { box.style.display = "none"; }, 3000);
       }
- 
+
       // ── Submit — direct, no confirm popup ──
       submitLogBtn.addEventListener("click", async () => {
         if (!selectedReason || alreadyLoggedId) return;
         submitLogBtn.disabled = true;
         submitLogBtn.textContent = "Logging visit...";
         reasonOptions.forEach(o => { o.style.pointerEvents = "none"; });
- 
+
         const { data: logData, error } = await supabase
           .from("visit_logs")
           .insert({ user_id: userId, reason: selectedReason, status: "inside" })
           .select("id").single();
- 
+
         if (error) {
           showMessage("Failed: " + error.message);
           submitLogBtn.disabled = false; submitLogBtn.textContent = "Log Visit";
@@ -296,11 +296,11 @@
         }
         if (logData?.id) localStorage.setItem("currentLogId", logData.id);
         localStorage.setItem("lastReason", selectedReason);
- 
+
         // Show welcome popup then redirect after 3s
         showWelcomePopup();
       });
- 
+
       // ── Log out ──
       document.getElementById("logoutBtn").addEventListener("click", async () => {
         const logId  = localStorage.getItem("currentLogId");
@@ -318,7 +318,7 @@
         showMessage("Logged out successfully.");
         setTimeout(() => { window.location.href = "index.html"; }, 1000);
       });
- 
+
       // ── Library hours widget ──
       function updateHoursPill() {
         const schedule = {
@@ -335,7 +335,7 @@
         const h    = now.getHours();
         const pill = document.getElementById("hoursPill");
         const hrs  = schedule[day];
- 
+
         if (!hrs) {
           pill.textContent = "Closed today";
           pill.className = "hours-pill closed";
@@ -353,13 +353,13 @@
         }
       }
       updateHoursPill();
- 
+
       // ── Init ──
       checkAlreadyInside();
       loadVisitHistory();
       loadStreak();
       loadLastReason();
- 
+
       function showWelcomePopup() {
         const popup = document.getElementById("welcomePopup");
         const bar   = document.getElementById("welcomeBar");
