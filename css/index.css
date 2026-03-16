@@ -282,16 +282,8 @@ select#regProgramFaculty:focus { border-color: var(--primary-blue); }
 /* ── Responsive ── */
 @media (max-width: 899px) {
   .login-wrapper { max-width: 100%; box-shadow: none; }
-  /* On tablet/mobile: announcement moves inside the login panel, not floating */
-  .announce-panel {
-    position: static;
-    width: 100%;
-    filter: none;
-    order: -1;
-  }
-  .announce-toggle { border-radius: 0; }
-  .announce-panel.open .announce-toggle { border-radius: 0; }
-  .announce-body { border-radius: 0; border-left: none; border-right: none; }
+  /* Hide floating announcement on mobile — doesn't interfere with login */
+  .announce-panel { display: none !important; }
 }
 @media (max-width: 599px) {
   .login-wrapper { max-width: 100%; }
