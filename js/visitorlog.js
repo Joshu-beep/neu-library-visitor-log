@@ -77,9 +77,10 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
           banner.classList.add("show");
           document.getElementById("alreadySince").textContent = `Checked in at ${timeIn} for "${data.reason}"`;
 
-          // Show check-out button, hide log visit
-          submitLogBtn.style.display = "none";
-          document.getElementById("checkoutBtn").style.display = "block";
+          // Disable form when already inside
+          submitLogBtn.disabled = true;
+          submitLogBtn.textContent = "Already checked in";
+          submitLogBtn.style.background = "#94a3b8";
           reasonOptions.forEach(o => { o.style.pointerEvents = "none"; o.style.opacity = "0.45"; });
         }
       }
@@ -288,20 +289,6 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
         showWelcomePopup();
       });
 
-      // ── Check-out (already inside) ──
-      document.getElementById("checkoutBtn").addEventListener("click", async () => {
-        const btn = document.getElementById("checkoutBtn");
-        btn.disabled = true; btn.textContent = "Checking out...";
-        const logId = alreadyLoggedId || localStorage.getItem("currentLogId");
-        const payload = { status: "logged_out", time_out: new Date().toISOString() };
-        if (logId) {
-          await supabase.from("visit_logs").update(payload).eq("id", logId);
-        }
-        await supabase.auth.signOut();
-        localStorage.clear();
-        window.location.href = "index.html";
-      });
-
       // ── Log out (account logout) ──
       document.getElementById("logoutBtn").addEventListener("click", async () => {
         const logId = localStorage.getItem("currentLogId");
@@ -344,15 +331,23 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
       // ── Profile photo ──
       async function loadProfilePhoto() {
-        const { data } = await supabase.storage.from("avatars").download(`${userId}/avatar`);
-        if (data) {
-          const url = URL.createObjectURL(data);
-          const av = document.getElementById("userAvatar");
-          av.style.backgroundImage = `url(${url})`;
-          av.style.backgroundSize = "cover";
-          av.style.backgroundPosition = "center";
-          av.textContent = "";
-        }
+        try {
+          const { data } = supabase.storage.from("avatars").getPublicUrl(`${userId}/avatar`);
+          if (data?.publicUrl) {
+            // Add cache-buster to force reload after upload
+            const url = data.publicUrl + "?t=" + Date.now();
+            const img = new Image();
+            img.onload = () => {
+              const av = document.getElementById("userAvatar");
+              av.style.backgroundImage = `url(${url})`;
+              av.style.backgroundSize = "cover";
+              av.style.backgroundPosition = "center";
+              av.textContent = "";
+            };
+            img.onerror = () => {}; // silently ignore if no photo yet
+            img.src = url;
+          }
+        } catch(e) { /* no photo yet */ }
       }
 
       document.getElementById("avatarUploadBtn")?.addEventListener("click", () => {
