@@ -9,6 +9,14 @@
       const mainHeader = document.getElementById("mainHeader");
       const headerSubtitle = document.getElementById("headerSubtitle");
  
+      function showMessage(msg, color = "#001f54") {
+        const msgBox = document.getElementById("msgBox");
+        msgBox.textContent = msg;
+        msgBox.style.backgroundColor = color;
+        msgBox.style.display = "block";
+        setTimeout(() => { msgBox.style.display = "none"; }, 4000);
+      }
+ 
       // ── Navigation ──
       document.getElementById("showRegisterBtn").onclick = () => {
         loginView.style.display = "none";
@@ -35,14 +43,6 @@
         mainHeader.classList.remove("admin-mode");
         headerSubtitle.textContent = "Visitor Management System";
       };
- 
-      function showMessage(msg, color = "#001f54") {
-        const msgBox = document.getElementById("msgBox");
-        msgBox.textContent = msg;
-        msgBox.style.backgroundColor = color;
-        msgBox.style.display = "block";
-        setTimeout(() => { msgBox.style.display = "none"; }, 4000);
-      }
  
       // ── LOGIN ──
       document.getElementById("loginForm").onsubmit = async (e) => {
