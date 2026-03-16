@@ -270,19 +270,18 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
       // ── Admin Management (owner only) ──
       // Check role both from localStorage AND from Supabase to be reliable
       async function checkOwnerAccess() {
-        const storedRole = localStorage.getItem('adminRole');
+        const storedRole = (localStorage.getItem('adminRole') || '').toLowerCase();
         if (storedRole === 'owner') {
           const tab = document.getElementById('adminsTabBtn');
           if (tab) tab.style.display = '';
           return;
         }
-        // Fallback: query Supabase with current session email
         const adminEmail = localStorage.getItem('adminEmail');
         if (!adminEmail) return;
         const { data } = await supabase
           .from('users').select('role').eq('email', adminEmail).maybeSingle();
-        if (data?.role === 'owner') {
-          localStorage.setItem('adminRole', 'owner'); // fix stale localStorage
+        if (data?.role?.toLowerCase() === 'owner') {
+          localStorage.setItem('adminRole', 'owner');
           const tab = document.getElementById('adminsTabBtn');
           if (tab) tab.style.display = '';
         }
@@ -294,7 +293,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
         list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">Loading...</div>`;
         const { data, error } = await supabase
           .from('users').select('id, name, email, role')
-          .in('role', ['admin', 'owner'])
+          .in('role', ['admin', 'owner', 'Admin', 'Owner'])
           .order('role');
         if (error || !data?.length) {
           list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">No admins assigned yet.</div>`;
@@ -307,10 +306,10 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
               <div style="font-size:12px;color:var(--text-muted);">${u.email}</div>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
-              <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;${u.role === 'owner' ? 'background:#fef3c7;color:#92400e;' : 'background:#eff6ff;color:#1d4ed8;'}">
-                ${u.role === 'owner' ? '👑 Owner' : 'Admin'}
+              <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;${u.role?.toLowerCase() === 'owner' ? 'background:#fef3c7;color:#92400e;' : 'background:#eff6ff;color:#1d4ed8;'}">
+                ${u.role?.toLowerCase() === 'owner' ? '👑 Owner' : 'Admin'}
               </span>
-              ${u.role !== 'owner' ? `<button onclick="removeAdmin('${u.id}','${u.email}')"
+              ${u.role?.toLowerCase() !== 'owner' ? `<button onclick="removeAdmin('${u.id}','${u.email}')"
                 style="padding:4px 12px;background:#fef2f2;color:#ef4444;border:1px solid #fecaca;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">
                 Remove
               </button>` : ''}
@@ -327,8 +326,8 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
         }
         const { data, error } = await supabase.from('users').select('id, role').eq('email', email).maybeSingle();
         if (error || !data) { msg.textContent = 'Account not found. They must register first.'; msg.style.color = '#ef4444'; return; }
-        if (data.role === 'owner') { msg.textContent = 'Cannot change the owner role.'; msg.style.color = '#ef4444'; return; }
-        if (data.role === 'admin') { msg.textContent = 'This user is already an admin.'; msg.style.color = '#f59e0b'; return; }
+        if (data.role?.toLowerCase() === 'owner') { msg.textContent = 'Cannot change the owner role.'; msg.style.color = '#ef4444'; return; }
+        if (data.role?.toLowerCase() === 'admin') { msg.textContent = 'This user is already an admin.'; msg.style.color = '#f59e0b'; return; }
         const { error: upErr } = await supabase.from('users').update({ role: 'admin' }).eq('id', data.id);
         if (upErr) { msg.textContent = 'Error: ' + upErr.message; msg.style.color = '#ef4444'; return; }
         msg.textContent = '✓ Admin assigned successfully!'; msg.style.color = '#16a34a';
