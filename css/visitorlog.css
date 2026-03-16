@@ -15,7 +15,7 @@
 
 html, body { height: 100%; overflow: hidden; }
 body {
-  background-color: var(--bg);
+  background-color: #1a2744;
   background-image: url("../img/visitorlog-bg.jpg");
   background-size: cover; background-position: center;
   background-repeat: no-repeat; background-attachment: fixed;
@@ -23,7 +23,7 @@ body {
 }
 body::before {
   content: ""; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.28);
+  background: rgba(10,20,50,0.45);
   pointer-events: none; z-index: 0;
 }
 .navbar, .workspace { position: relative; z-index: 1; }
@@ -46,12 +46,11 @@ body::before {
 .workspace {
   flex: 1;
   display: grid;
-  grid-template-columns: clamp(180px, 17vw, 240px) clamp(320px, 38vw, 500px) clamp(180px, 17vw, 240px);
-  gap: clamp(10px, 1.2vw, 18px);
-  padding: clamp(10px, 1.2vw, 18px) clamp(12px, 1.5vw, 24px);
+  grid-template-columns: clamp(180px, 16vw, 230px) 1fr clamp(180px, 16vw, 230px);
+  gap: clamp(10px, 1.2vw, 16px);
+  padding: clamp(10px, 1.2vw, 16px) clamp(12px, 1.5vw, 20px);
   overflow: auto;
   align-items: flex-start;
-  justify-content: center;
 }
 
 /* ── Left panel ── */
@@ -144,7 +143,7 @@ body::before {
 .h-dur { font-size: 10px; color: #94a3b8; background: #f1f5f9; padding: 2px 7px; border-radius: 20px; white-space: nowrap; }
 .history-empty { font-size: 12px; color: #94a3b8; text-align: center; padding: 14px 0; }
 
-/* ── Right panel — compact card, max-width centered ── */
+/* ── Right panel — fills center column ── */
 .right-panel {
   background: rgba(255,255,255,0.97);
   border-radius: 14px;
@@ -152,9 +151,28 @@ body::before {
   display: flex; flex-direction: column;
   border: 1px solid var(--border);
   width: 100%;
-  max-width: clamp(360px, 45vw, 560px);
-  flex-shrink: 0;
 }
+
+/* ── Analytics card ── */
+.analytics-card {
+  background: rgba(255,255,255,0.93); border-radius: 10px;
+  padding: clamp(8px, 1vw, 12px) clamp(10px, 1.1vw, 14px);
+  border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+/* ── Notices card ── */
+.notices-card {
+  background: rgba(255,255,255,0.93); border-radius: 10px;
+  padding: clamp(8px, 1vw, 12px) clamp(10px, 1.1vw, 14px);
+  border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.notices-item {
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 5px 0; border-bottom: 1px solid var(--border);
+  font-size: 11px; line-height: 1.4;
+}
+.notices-item:last-child { border-bottom: none; }
+.notices-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
 
 .right-header {
   padding: clamp(10px, 1.1vw, 14px) clamp(14px, 1.6vw, 20px) clamp(8px, 0.9vw, 11px);
