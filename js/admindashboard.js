@@ -1,15 +1,15 @@
-      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
       const SUPABASE_URL = 'https://ruajjuxabwfqpawpjosl.supabase.co';
       const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1YWpqdXhhYndmcXBhd3Bqb3NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0NTg0MjksImV4cCI6MjA4OTAzNDQyOX0.O1ZbG4vC6q4DxQKTq664i3e4xwUYcvgVDOsuNMDNK4I';
       const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
- 
+
       const PH = 'Asia/Manila';
       const PH_OFFSET_MS = 8 * 60 * 60 * 1000;
       let allLogs = [], allUsers = [], visitChart = null;
- 
+
       function phDate(iso) { return new Date(iso).toLocaleDateString('en-PH', { timeZone: PH, year: 'numeric', month: 'short', day: 'numeric' }); }
       function phTime(iso) { return new Date(iso).toLocaleTimeString('en-PH', { timeZone: PH, hour: '2-digit', minute: '2-digit' }); }
- 
+
       function calcDuration(timeIn, timeOut) {
         if (!timeOut) return '—';
         const diff = new Date(timeOut) - new Date(timeIn);
@@ -18,18 +18,18 @@
         const h = Math.floor(m / 60);
         return h > 0 ? `${h}h ${m % 60}m` : `${m}m`;
       }
- 
+
       function todayPHStartISO() {
         const n = new Date(Date.now() + PH_OFFSET_MS);
         return new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate()) - PH_OFFSET_MS).toISOString();
       }
- 
+
       function showToast(msg) {
         const x = document.getElementById('toast');
         x.textContent = msg; x.className = 'show';
         setTimeout(() => { x.className = x.className.replace('show', ''); }, 3000);
       }
- 
+
       // ── Auto-logout stale inside records from previous days ──
       async function autoLogoutMidnight() {
         const todayStart = todayPHStartISO();
@@ -39,11 +39,11 @@
           .eq('status', 'inside')
           .lt('time_in', todayStart);
       }
- 
+
       // ── Stats ──
       async function loadStats() {
         const PH_OFFSET_MS = 8 * 60 * 60 * 1000;
- 
+
         // PH midnight today in UTC
         const nowUTC = new Date();
         const nowPH  = new Date(nowUTC.getTime() + PH_OFFSET_MS);
@@ -52,40 +52,40 @@
         ));
         const todayISO = new Date(midnightPH.getTime() - PH_OFFSET_MS).toISOString();
         const weekISO  = new Date(midnightPH.getTime() - PH_OFFSET_MS - 7 * 86400000).toISOString();
- 
+
         try {
           // Live occupancy — count distinct users whose latest log is "inside"
           const { data: insideLogs } = await supabase
             .from('visit_logs')
             .select('user_id, status')
             .eq('status', 'inside');
- 
+
           const uniqueInside = insideLogs
             ? new Set(insideLogs.map(r => r.user_id)).size
             : 0;
- 
+
           // Visits today
           const { count: todayCount } = await supabase
             .from('visit_logs')
             .select('*', { count: 'exact', head: true })
             .gte('time_in', todayISO);
- 
+
           // Visits this week
           const { count: weekCount } = await supabase
             .from('visit_logs')
             .select('*', { count: 'exact', head: true })
             .gte('time_in', weekISO);
- 
+
           // Total registered users
           const { count: totalCount } = await supabase
             .from('users')
             .select('*', { count: 'exact', head: true });
- 
+
           document.getElementById('live-stat').textContent  = uniqueInside ?? 0;
           document.getElementById('today-stat').textContent = todayCount   ?? 0;
           document.getElementById('week-stat').textContent  = weekCount    ?? 0;
           document.getElementById('total-stat').textContent = totalCount   ?? 0;
- 
+
         } catch (err) {
           console.error('Stats error:', err);
           ['live-stat','today-stat','week-stat','total-stat'].forEach(id => {
@@ -93,7 +93,7 @@
           });
         }
       }
- 
+
       // ── Currently Inside ──
       async function loadInsideNow() {
         const { data } = await supabase
@@ -101,7 +101,7 @@
           .select('*, users(name, program)')
           .eq('status', 'inside')
           .order('time_in', { ascending: false });
- 
+
         const tbody = document.getElementById('insideTableBody');
         if (!data?.length) {
           document.getElementById('inside-count').textContent = '0 people';
@@ -118,7 +118,7 @@
             <td>${phTime(r.time_in)}</td>
           </tr>`).join('');
       }
- 
+
       // ── Chart ──
       async function loadChart() {
         const days = [], labels = [];
@@ -151,7 +151,7 @@
           }
         });
       }
- 
+
       // ── Logs ──
       async function loadLogs() {
         const { data, error } = await supabase
@@ -162,7 +162,7 @@
         allLogs = data || [];
         renderLogs(allLogs);
       }
- 
+
       function renderLogs(logs) {
         const tbody = document.getElementById('logTableBody');
         if (!logs.length) { tbody.innerHTML = `<tr class="loading-row"><td colspan="6">No visit records found.</td></tr>`; return; }
@@ -180,7 +180,7 @@
             </tr>`;
         }).join('');
       }
- 
+
       // ── Users ──
       async function loadUsers() {
         const { data, error } = await supabase.from('users').select('*').order('created_at', { ascending: false });
@@ -188,7 +188,7 @@
         allUsers = data || [];
         renderUsers(allUsers);
       }
- 
+
       function renderUsers(users) {
         const tbody = document.getElementById('usersTableBody');
         if (!users.length) { tbody.innerHTML = `<tr class="loading-row"><td colspan="6">No user records found.</td></tr>`; return; }
@@ -217,7 +217,7 @@
             </tr>`;
         }).join('');
       }
- 
+
       async function toggleBlock(userId, btn) {
         const blocking = btn.textContent.trim() === 'Block';
         const { error } = await supabase.from('users').update({ is_blocked: blocking }).eq('id', userId);
@@ -226,7 +226,7 @@
         if (blocking) { el.textContent = 'Blocked'; el.style.color = 'var(--danger-red)'; btn.textContent = 'Unblock'; btn.style.color = '#16a34a'; showToast('User blocked.'); }
         else { el.textContent = 'Active'; el.style.color = '#16a34a'; btn.textContent = 'Block'; btn.style.color = 'var(--danger-red)'; showToast('User unblocked.'); }
       }
- 
+
       async function removeUser(userId) {
         if (!confirm('Delete this user and all their visit logs?')) return;
         const { error } = await supabase.from('users').delete().eq('id', userId);
@@ -236,7 +236,7 @@
         el.textContent = Math.max(0, parseInt(el.textContent) - 1);
         showToast('User removed.');
       }
- 
+
       async function triggerResetAll() {
         if (!confirm('DANGER: Erase ALL visit logs and users? Cannot be undone.')) return;
         const [l, u] = await Promise.all([
@@ -250,7 +250,7 @@
         showToast('Reset complete. Logging out...');
         setTimeout(() => { window.location.href = 'index.html'; }, 1500);
       }
- 
+
       function changeView(view, btn) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         btn.classList.add('active');
@@ -266,14 +266,14 @@
         if (view === 'notices') loadNoticesAdmin();
         if (view === 'admins') loadAdminsList();
       }
- 
+
       // ── Admin Management (owner only) ──
       const currentAdminRole = localStorage.getItem('adminRole');
       if (currentAdminRole === 'owner') {
         const tab = document.getElementById('adminsTabBtn');
         if (tab) tab.style.display = '';
       }
- 
+
       async function loadAdminsList() {
         const list = document.getElementById('adminsList');
         list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">Loading...</div>`;
@@ -302,7 +302,7 @@
             </div>
           </div>`).join('');
       }
- 
+
       async function assignAdmin() {
         const email = document.getElementById('assignAdminEmail').value.trim().toLowerCase();
         const msg = document.getElementById('assignMsg');
@@ -321,7 +321,8 @@
         loadAdminsList();
         setTimeout(() => { msg.style.display = 'none'; }, 3000);
       }
- 
+      window.assignAdmin = assignAdmin;
+
       async function removeAdmin(userId, email) {
         if (!confirm(`Remove admin access from ${email}?`)) return;
         const { error } = await supabase.from('users').update({ role: 'student' }).eq('id', userId);
@@ -329,19 +330,20 @@
         showToast(`Admin access removed from ${email}.`);
         loadAdminsList();
       }
- 
+      window.removeAdmin = removeAdmin;
+
       // ── Load notices for admin ──
       async function loadNoticesAdmin() {
         const { data } = await supabase
           .from('notices').select('*').order('created_at', { ascending: false });
- 
+
         const events    = (data || []).filter(n => n.type === 'event' || n.event_date);
         const reminders = (data || []).filter(n => n.type === 'reminder' && !n.event_date);
- 
+
         renderNoticeList('eventsAdminList', events, true);
         renderNoticeList('remindersAdminList', reminders, false);
       }
- 
+
       function renderNoticeList(containerId, items, showDate) {
         const el = document.getElementById(containerId);
         if (!items.length) {
@@ -368,7 +370,7 @@
           </div>`;
         }).join('');
       }
- 
+
       // ── Add announcement (event with date) ──
       async function addAnnouncement() {
         const msg  = document.getElementById('eventInput').value.trim();
@@ -384,7 +386,7 @@
         showToast('Announcement posted!');
         loadNoticesAdmin();
       }
- 
+
       // ── Add reminder (no date) ──
       async function addReminder() {
         const msg = document.getElementById('reminderInput').value.trim();
@@ -397,13 +399,13 @@
         showToast('Reminder posted!');
         loadNoticesAdmin();
       }
- 
+
       // ── Toggle notice visibility ──
       async function toggleNotice(id, currentActive) {
         await supabase.from('notices').update({ active: !currentActive }).eq('id', id);
         loadNoticesAdmin();
       }
- 
+
       // ── Delete notice ──
       async function deleteNotice(id) {
         if (!confirm('Delete this notice?')) return;
@@ -411,7 +413,7 @@
         showToast('Deleted.');
         loadNoticesAdmin();
       }
- 
+
       function runFilter() {
         const f = document.getElementById('filterInput').value.toUpperCase();
         const tbl = document.getElementById('log-view').classList.contains('hidden') ? 'usersTable' : 'logTable';
@@ -419,14 +421,14 @@
           r.style.display = r.textContent.toUpperCase().includes(f) ? '' : 'none';
         });
       }
- 
+
       function filterByDate() {
         const from = document.getElementById('dateFrom').value;
         const to   = document.getElementById('dateTo').value;
         if (!from && !to) { renderLogs(allLogs); return; }
         renderLogs(allLogs.filter(l => { const d = l.time_in.split('T')[0]; return (!from || d >= from) && (!to || d <= to); }));
       }
- 
+
       function exportCSV() {
         const rows = [['Date & Time In','Time Out','Duration','Name','Email','Program','Reason','Status']];
         allLogs.forEach(l => rows.push([
@@ -441,23 +443,23 @@
         a.download = `NEU_Visits_${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
       }
- 
+
       function exportPDF() { window.print(); }
       function logout() { if (confirm('End administrator session?')) window.location.href = 'index.html'; }
- 
+
       window.changeView = changeView; window.runFilter = runFilter; window.filterByDate = filterByDate;
       window.triggerResetAll = triggerResetAll; window.toggleBlock = toggleBlock; window.removeUser = removeUser;
       window.exportCSV = exportCSV; window.exportPDF = exportPDF; window.logout = logout;
       window.addAnnouncement = addAnnouncement; window.addReminder = addReminder;
       window.toggleNotice = toggleNotice; window.deleteNotice = deleteNotice;
- 
+
       // ── Init ──
       autoLogoutMidnight().catch(e => console.warn('autoLogout:', e));
       loadStats().catch(e => console.error('loadStats:', e));
       loadInsideNow().catch(e => console.error('loadInsideNow:', e));
       loadChart().catch(e => console.error('loadChart:', e));
       loadLogs().catch(e => console.error('loadLogs:', e));
- 
+
       // ── Real-time auto-update ──
       // Subscribe to visit_logs changes — fires instantly when anyone checks in or out
       supabase
@@ -469,7 +471,7 @@
           loadChart().catch(() => {});
         })
         .subscribe();
- 
+
       // Subscribe to users table changes — fires when a new user registers or is blocked/deleted
       supabase
         .channel('users_changes')
@@ -481,14 +483,14 @@
           }
         })
         .subscribe();
- 
+
       // ── Fallback polling every 30 seconds ──
       // Catches any changes that Realtime might miss (e.g. if websocket drops)
       setInterval(() => {
         loadStats().catch(() => {});
         loadInsideNow().catch(() => {});
       }, 30000);
- 
+
       // Poll logs and chart every 2 minutes
       setInterval(() => {
         loadLogs().catch(() => {});
