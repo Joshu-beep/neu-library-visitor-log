@@ -158,7 +158,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
         const tbody = document.getElementById('insideTableBody');
         if (!data?.length) {
           document.getElementById('inside-count').textContent = '0 people';
-          tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:30px;color:var(--text-muted)">No one inside yet.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--text-muted)">No one inside yet.</td></tr>`;
           return;
         }
         const seen = new Set();
@@ -169,23 +169,47 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
             <td><span class="pulse"></span>${r.users?.name || '—'}</td>
             <td><span class="badge badge-program" style="font-size:10px">${(r.users?.program || '—').substring(0,30)}</span></td>
             <td>${phTime(r.time_in)}</td>
+            <td>
+              <button onclick="forceLogoutUser('${r.id}', '${r.users?.name || 'this user'}')"
+                style="padding:4px 10px;background:#fef2f2;color:#ef4444;border:1px solid #fecaca;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;">
+                Force Logout
+              </button>
+            </td>
           </tr>`).join('');
+      }
+
+      // ── Force logout a user from admin ──
+      async function forceLogoutUser(logId, userName) {
+        if (!confirm(`Force log out ${userName} from the library?`)) return;
+        const { error } = await supabase.from('visit_logs').update({
+          status: 'logged_out',
+          time_out: new Date().toISOString()
+        }).eq('id', logId);
+        if (error) { showToast('Error: ' + error.message); return; }
+        showToast(`${userName} has been logged out.`);
+        loadInsideNow();
+        loadStats();
       }
 
       // ── Chart ──
       async function loadChart() {
         const days = [], labels = [];
         for (let i = 6; i >= 0; i--) {
-          // Get the PH date string for each of the last 7 days correctly
           const d = new Date(Date.now() - i * 86400000);
-          const phDateStr = d.toLocaleDateString('en-CA', { timeZone: PH }); // YYYY-MM-DD in PH time
+          // Use PH timezone for BOTH the date key and the display label
+          const phDateStr = d.toLocaleDateString('en-CA', { timeZone: PH }); // YYYY-MM-DD
+          const label = new Date(phDateStr + 'T12:00:00').toLocaleDateString('en-PH', {
+            weekday: 'short', month: 'short', day: 'numeric'
+          });
           days.push(phDateStr);
-          labels.push(d.toLocaleDateString('en-PH', { timeZone: PH, weekday: 'short', month: 'short', day: 'numeric' }));
+          labels.push(label);
         }
         const counts = await Promise.all(days.map(async d => {
           const start = new Date(d + 'T00:00:00+08:00').toISOString();
           const end   = new Date(d + 'T23:59:59+08:00').toISOString();
-          const { count } = await supabase.from('visit_logs').select('*', { count: 'exact', head: true }).gte('time_in', start).lte('time_in', end);
+          const { count } = await supabase.from('visit_logs')
+            .select('*', { count: 'exact', head: true })
+            .gte('time_in', start).lte('time_in', end);
           return count ?? 0;
         }));
         const total = counts.reduce((a,b) => a+b, 0);
@@ -561,6 +585,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
       window.exportCSV = exportCSV; window.exportPDF = exportPDF; window.logout = logout;
       window.addAnnouncement = addAnnouncement; window.addReminder = addReminder;
       window.toggleNotice = toggleNotice; window.deleteNotice = deleteNotice;
+      window.forceLogoutUser = forceLogoutUser;
 
       // ── Init ──
       autoLogoutMidnight().catch(e => console.warn('autoLogout:', e));
