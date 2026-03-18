@@ -10,6 +10,26 @@
   <body>
     <div id="msgBox"></div>
 
+    <!-- Image Crop Modal -->
+    <div class="crop-modal-overlay" id="cropModalOverlay">
+      <div class="crop-modal">
+        <h3>Adjust Your Photo</h3>
+        <p>Drag to reposition · Zoom to fit your face</p>
+        <div class="crop-canvas-wrap" id="cropWrap">
+          <canvas id="cropCanvas"></canvas>
+          <div class="crop-circle-overlay" id="cropCircle"></div>
+        </div>
+        <div class="crop-controls">
+          <label>Zoom</label>
+          <input type="range" id="cropZoom" min="1" max="4" step="0.01" value="1" />
+        </div>
+        <div class="crop-actions">
+          <button class="btn-crop-save" id="cropSaveBtn">Save Photo</button>
+          <button class="btn-crop-cancel" id="cropCancelBtn">Cancel</button>
+        </div>
+      </div>
+    </div>
+
     <!-- QR Modal -->
     <div id="qrModal">
       <div class="qr-box">
