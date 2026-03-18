@@ -421,37 +421,99 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
         document.getElementById("avatarInput").click();
       });
 
-      document.getElementById("avatarInput")?.addEventListener("change", async (e) => {
+      document.getElementById("avatarInput")?.addEventListener("change", (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        // Resize to max 400x400 before upload to save storage
-        const canvas = document.createElement("canvas");
-        const img = new Image();
-        img.onload = async () => {
-          const size = Math.min(img.width, img.height, 400);
-          canvas.width = size; canvas.height = size;
-          const ctx = canvas.getContext("2d");
-          // Center-crop
-          const sx = (img.width - size) / 2, sy = (img.height - size) / 2;
-          ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
-          canvas.toBlob(async (blob) => {
-            const { error } = await supabase.storage
-              .from("avatars")
-              .upload(`${userId}/avatar`, blob, { upsert: true, contentType: "image/jpeg" });
-            if (!error) {
-              await loadProfilePhoto();
-              showMessage("Photo updated!");
-            } else {
-              // RLS policy error — guide user to fix
-              if (error.message?.includes("row-level security")) {
-                showMessage("Upload blocked. Ask admin to run the storage policy SQL in Supabase.");
-              } else {
-                showMessage("Upload failed: " + error.message);
-              }
-            }
-          }, "image/jpeg", 0.85);
+        e.target.value = "";
+        openCropper(file);
+      });
+
+      // ── Image Cropper ──
+      let cropImg = null, cropX = 0, cropY = 0, cropZoom = 1;
+      let cropDragging = false, cropDragStartX = 0, cropDragStartY = 0;
+      let cropImgStartX = 0, cropImgStartY = 0;
+
+      function openCropper(file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          cropImg = new Image();
+          cropImg.onload = () => {
+            cropZoom = 1; cropX = 0; cropY = 0;
+            document.getElementById("cropZoom").value = 1;
+            document.getElementById("cropModalOverlay").classList.add("show");
+            setTimeout(drawCrop, 50);
+          };
+          cropImg.src = ev.target.result;
         };
-        img.src = URL.createObjectURL(file);
+        reader.readAsDataURL(file);
+      }
+
+      function drawCrop() {
+        const wrap = document.getElementById("cropWrap");
+        const canvas = document.getElementById("cropCanvas");
+        const size = wrap.clientWidth;
+        canvas.width = size; canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, size, size);
+        if (!cropImg) return;
+        const scale = (size / Math.min(cropImg.width, cropImg.height)) * cropZoom;
+        const drawW = cropImg.width * scale, drawH = cropImg.height * scale;
+        cropX = Math.min(0, Math.max(size - drawW, cropX));
+        cropY = Math.min(0, Math.max(size - drawH, cropY));
+        ctx.drawImage(cropImg, cropX, cropY, drawW, drawH);
+      }
+
+      document.getElementById("cropZoom").addEventListener("input", (e) => {
+        cropZoom = parseFloat(e.target.value); drawCrop();
+      });
+
+      const cropWrap = document.getElementById("cropWrap");
+      cropWrap.addEventListener("mousedown", (e) => {
+        cropDragging = true; cropDragStartX = e.clientX; cropDragStartY = e.clientY;
+        cropImgStartX = cropX; cropImgStartY = cropY;
+      });
+      cropWrap.addEventListener("touchstart", (e) => {
+        cropDragging = true; cropDragStartX = e.touches[0].clientX; cropDragStartY = e.touches[0].clientY;
+        cropImgStartX = cropX; cropImgStartY = cropY;
+      }, { passive: true });
+      const onCropMove = (cx, cy) => {
+        if (!cropDragging) return;
+        cropX = cropImgStartX + (cx - cropDragStartX);
+        cropY = cropImgStartY + (cy - cropDragStartY);
+        drawCrop();
+      };
+      window.addEventListener("mousemove", (e) => onCropMove(e.clientX, e.clientY));
+      window.addEventListener("touchmove", (e) => onCropMove(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+      window.addEventListener("mouseup", () => { cropDragging = false; });
+      window.addEventListener("touchend", () => { cropDragging = false; });
+
+      document.getElementById("cropCancelBtn").addEventListener("click", () => {
+        document.getElementById("cropModalOverlay").classList.remove("show");
+      });
+
+      document.getElementById("cropSaveBtn").addEventListener("click", async () => {
+        const canvas = document.getElementById("cropCanvas");
+        const out = document.createElement("canvas");
+        out.width = 400; out.height = 400;
+        const ctx = out.getContext("2d");
+        ctx.beginPath(); ctx.arc(200, 200, 200, 0, Math.PI * 2); ctx.clip();
+        ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, 400, 400);
+        out.toBlob(async (blob) => {
+          document.getElementById("cropSaveBtn").textContent = "Saving...";
+          const { error } = await supabase.storage
+            .from("avatars").upload(`${userId}/avatar`, blob, { upsert: true, contentType: "image/jpeg" });
+          if (!error) {
+            document.getElementById("cropModalOverlay").classList.remove("show");
+            document.getElementById("cropSaveBtn").textContent = "Save Photo";
+            await loadProfilePhoto();
+            showMessage("Photo updated!");
+          } else {
+            document.getElementById("cropSaveBtn").textContent = "Save Photo";
+            showMessage(error.message?.includes("row-level security")
+              ? "Upload blocked — run storage policy SQL in Supabase."
+              : "Upload failed: " + error.message);
+          }
+        }, "image/jpeg", 0.88);
       });
 
       // ── Init ──
