@@ -1,195 +1,309 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
-    <title>New Era University Library</title>
-    <link rel="icon" type="image/x-icon" href="img/neulogo.png" />
-    <link rel="stylesheet" href="css/index.css" />
-  </head>
-  <body>
-    <div id="msgBox"></div>
+:root {
+  --primary-blue: #001f54;
+  --accent-gold: #f59e0b;
+  --text-gray: #64748b;
+  --light-border: #cbd5e1;
+  --bg-fallback: #f4f6f9;
+  --admin-red: #991b1b;
+}
 
-    <!-- Announcement panel — fixed top-right on desktop, hidden on mobile -->
-    <div class="announce-panel open" id="announcePanel">
-      <button class="announce-toggle" onclick="document.getElementById('announcePanel').classList.toggle('open')">
-        <span>
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path></svg>
-          Library Announcements
-        </span>
-        <svg class="announce-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
-      </button>
-      <div class="announce-body" id="announceBody">
-        <div class="announce-empty">Loading...</div>
-      </div>
-    </div>
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
 
-    <div class="login-wrapper">
-      <div class="login-card">
-        <div class="card-header" id="mainHeader">
-          <div class="icon-container">
-            <img src="img/neulogo.png" alt="Library Logo" class="logo-img" onerror="this.style.display='none'" />
-          </div>
-          <h1 id="headerTitle">New Era University Library</h1>
-          <h2 id="headerSubtitle">Visitor Management System</h2>
-        </div>
+/* ── Body — background image fills the right side always ── */
+body {
+  background-image: url("../img/backgroundimg.jpg");
+  background-color: var(--bg-fallback);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  min-height: 100vh;
+  overflow-y: auto;
+}
 
-        <!-- LOGIN VIEW -->
-        <div class="card-body" id="loginView">
-          <form id="loginForm">
-            <div class="input-group">
-              <label>Institutional Email</label>
-              <input type="email" id="email" placeholder="Enter email..." required />
-            </div>
-            <div class="input-group">
-              <label>Password</label>
-              <input type="password" id="password" placeholder="Enter password..." required />
-            </div>
-            <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
-          </form>
-          <div class="divider-container"><p>Don't have account yet?</p></div>
-          <button type="button" class="btn btn-secondary" id="showRegisterBtn">Register Here</button>
-        </div>
+/* ── Login panel — fluid width, shrinks on small screens ── */
+.login-wrapper {
+  width: clamp(300px, 35vw, 520px);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  box-shadow: 4px 0 40px rgba(0,0,0,0.18);
+  z-index: 10;
+  min-height: 100vh;
+  overflow-y: auto;
+}
 
-        <!-- REGISTRATION VIEW -->
-        <div class="card-body" id="registerView" style="display: none">
-          <div style="text-align: center; margin-bottom: 20px">
-            <h3 style="color: var(--primary-blue); font-weight: 700">Create an Account</h3>
-          </div>
-          <div class="role-selector">
-            <div class="role-card active" data-role="student"><span>Student</span></div>
-            <div class="role-card" data-role="faculty"><span>Faculty</span></div>
-          </div>
-          <form id="registerForm">
-            <div class="input-group text-left">
-              <label>Institutional Email</label>
-              <input type="email" id="regEmail" placeholder="e.g. j.doe@neu.edu.ph" required />
-            </div>
-            <div class="input-group text-left">
-              <label>Password</label>
-              <input type="password" id="regPassword" placeholder="Create a password" required />
-            </div>
-            <div class="input-group text-left">
-              <label>Full Name</label>
-              <input type="text" id="regName" placeholder="Juan Dela Cruz" required />
-            </div>
-            <!-- Student Program Dropdown (shown by default) -->
-            <div class="input-group text-left" id="studentProgramGroup">
-              <label>Program / College</label>
-              <select id="regProgram" required>
-                <option value="" disabled selected>Select your program...</option>
-                <optgroup label="Graduate &amp; Special Programs">
-                  <option>School of Graduate Studies</option>
-                  <option>College of Law</option>
-                  <option>College of Medicine</option>
-                  <option>Expanded Tertiary Education Equivalency &amp; Accreditation Program (ETEEAP)</option>
-                  <option>Alternative Learning System</option>
-                  <option>School of International Relations</option>
-                </optgroup>
-                <optgroup label="Undergraduate Colleges">
-                  <option>College of Accountancy</option>
-                  <option>College of Agriculture</option>
-                  <option>College of Arts and Science</option>
-                  <option>College of Business Administration</option>
-                  <option>College of Communication</option>
-                  <option>College of Informatics and Computing Studies</option>
-                  <option>College of Criminology</option>
-                  <option>College of Education</option>
-                  <option>College of Engineering and Architecture</option>
-                  <option>College of Medical Technology</option>
-                  <option>College of Midwifery</option>
-                  <option>College of Music</option>
-                  <option>College of Nursing</option>
-                  <option>College of Physical Therapy</option>
-                  <option>College of Respiratory Therapy</option>
-                </optgroup>
-                <optgroup label="Basic Education">
-                  <option>Integrated School</option>
-                </optgroup>
-              </select>
-            </div>
+.login-card {
+  background: transparent;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 
-            <!-- Faculty Department Dropdown (hidden by default) -->
-            <div class="input-group text-left" id="facultyProgramGroup" style="display:none">
-              <label>Faculty Department</label>
-              <select id="regProgramFaculty">
-                <option value="" disabled selected>Select your department...</option>
-                <option>College of Accountancy Faculty</option>
-                <option>College of Agriculture Faculty</option>
-                <option>College of Arts and Science Faculty</option>
-                <option>College of Business Administration Faculty</option>
-                <option>College of Communication Faculty</option>
-                <option>College of Informatics and Computing Studies Faculty</option>
-                <option>College of Criminology Faculty</option>
-                <option>College of Education Faculty</option>
-                <option>College of Engineering and Architecture Faculty</option>
-                <option>College of Medical Technology Faculty</option>
-                <option>College of Midwifery Faculty</option>
-                <option>College of Music Faculty</option>
-                <option>College of Nursing Faculty</option>
-                <option>College of Physical Therapy Faculty</option>
-                <option>College of Respiratory Therapy Faculty</option>
-                <option>School of International Relations Faculty</option>
-              </select>
-            </div>
-            <button type="submit" class="btn btn-primary" id="registerBtn">Complete Registration</button>
-          </form>
-          <div style="text-align: center; margin-top: 20px">
-            <a href="#" id="showLoginLink" style="font-size: 14px; color: var(--text-gray)">Back to Login</a>
-          </div>
-        </div>
+/* ── Header ── */
+.card-header {
+  background-color: var(--primary-blue);
+  color: #ffffff;
+  text-align: center;
+  padding: clamp(20px, 3vh, 40px) clamp(16px, 2vw, 28px) clamp(16px, 2.5vh, 32px);
+  border-bottom: 5px solid var(--accent-gold);
+  transition: background-color 0.3s ease;
+}
+.card-header.admin-mode { background-color: var(--admin-red); }
 
-        <!-- ADMIN LOGIN VIEW -->
-        <div class="card-body" id="adminView" style="display: none">
-          <div style="text-align: center; margin-bottom: 20px">
-            <h3 style="color: var(--admin-red); font-weight: 700">Admin Authentication</h3>
-            <p style="font-size: 13px; color: var(--text-gray)">Sign in with your assigned admin account</p>
-          </div>
-          <form id="adminLoginForm">
-            <div class="input-group">
-              <label>Institutional Email</label>
-              <input type="email" id="adminEmail" placeholder="yourname@neu.edu.ph" required />
-            </div>
-            <div class="input-group">
-              <label>Password</label>
-              <input type="password" id="adminPass" placeholder="••••••••" required />
-            </div>
-            <button type="submit" class="btn btn-admin" id="adminLoginBtn">Access Dashboard</button>
-          </form>
-          <div style="text-align: center; margin-top: 20px">
-            <a href="#" id="backFromAdmin" style="font-size: 14px; color: var(--text-gray)">Back to Visitor Access</a>
-          </div>
-        </div>
-      </div>
+.icon-container {
+  margin-bottom: clamp(8px, 1.2vh, 16px);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: clamp(54px, 6vw, 82px);
+  height: clamp(54px, 6vw, 82px);
+  border: 3px solid var(--accent-gold);
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: white;
+}
+.logo-img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
 
-      <div class="footer-links">
-        <a class="admin-link" id="adminBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="6" y="11" width="12" height="10" rx="2" ry="2"></rect>
-            <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
-          </svg>
-          Admin Access
-        </a>
-        <p class="copyright">© 2026 New Era University Library</p>
-      </div>
-      </div><!-- end login-card -->
-    </div><!-- end login-wrapper -->
+.card-header h1 {
+  font-size: clamp(17px, 2vw, 26px);
+  font-weight: 700; margin-bottom: 6px; letter-spacing: 0.5px;
+}
+.card-header h2 {
+  font-size: clamp(9px, 0.9vw, 13px);
+  color: var(--accent-gold); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+}
 
-    <!-- Bible verse — bottom right, responsive -->
-    <div class="bible-verse">
-      <div class="bible-card">
-        <div class="bible-header">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          <span>Knowledge &amp; Wisdom</span>
-        </div>
-        <p class="bible-text">"I can do all things through Christ who strengthens me."</p>
-        <div class="bible-ref">
-          <div class="bible-line"></div>
-          <span>Philippians 4:13</span>
-        </div>
-      </div>
-    </div>
+/* ── Form body ── */
+.card-body {
+  padding: clamp(16px, 3vh, 32px) clamp(16px, 3vw, 40px);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
-    <script src="js/index.js" type="module"></script>
-  </body>
-</html>
+.input-group { margin-bottom: clamp(12px, 1.8vh, 20px); }
+.input-row { display: flex; gap: 12px; }
+.input-row .input-group { flex: 1; }
+
+.input-group label {
+  display: block; text-align: center;
+  font-size: clamp(12px, 1vw, 14px);
+  color: var(--text-gray); margin-bottom: 6px; font-weight: 600;
+}
+.input-group input {
+  width: 100%;
+  padding: clamp(9px, 1.2vh, 13px) clamp(12px, 1.2vw, 16px);
+  border: 1px solid var(--light-border); border-radius: 8px;
+  font-size: clamp(12px, 1vw, 14px); outline: none;
+  transition: border-color 0.2s; text-align: center;
+}
+.text-left label { text-align: left; }
+.text-left input { text-align: left; }
+.input-group input:focus { border-color: var(--primary-blue); }
+
+.btn {
+  width: 100%;
+  padding: clamp(10px, 1.4vh, 15px);
+  border-radius: 8px;
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 700; cursor: pointer;
+  transition: all 0.2s ease; outline: none;
+}
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-primary { background-color: var(--primary-blue); color: #ffffff; border: none; margin-top: 4px; }
+.btn-admin { background-color: var(--admin-red); color: #ffffff; border: none; }
+.btn-secondary { background-color: #ffffff; color: var(--primary-blue); border: 1.5px solid var(--primary-blue); }
+
+.divider-container {
+  text-align: center; margin: clamp(14px, 2vh, 24px) 0 clamp(12px, 1.6vh, 20px);
+  position: relative;
+}
+.divider-container::before {
+  content: ""; position: absolute; top: 50%; left: 0; right: 0;
+  height: 1px; background-color: #f1f5f9; z-index: 1;
+}
+.divider-container p {
+  font-size: clamp(11px, 0.9vw, 13px); color: #94a3b8;
+  background-color: #ffffff; padding: 0 10px;
+  display: inline-block; position: relative; z-index: 2;
+}
+
+.footer-links {
+  text-align: center; color: #94a3b8;
+  font-size: clamp(11px, 0.9vw, 13px);
+  background-color: #f8fafc;
+  padding: clamp(12px, 1.8vh, 20px);
+  border-top: 1px solid var(--light-border); margin-top: auto;
+}
+.admin-link {
+  display: inline-flex; align-items: center; color: #64748b;
+  text-decoration: none; margin-bottom: 6px; font-weight: 600; cursor: pointer;
+}
+.admin-link:hover { color: var(--primary-blue); }
+.admin-link svg { width: 15px; height: 15px; margin-right: 6px; stroke: currentColor; }
+.copyright { font-size: clamp(10px, 0.8vw, 12px); }
+
+.role-selector { display: flex; gap: 12px; margin-bottom: clamp(14px, 2vh, 22px); }
+.role-card {
+  flex: 1; border: 1px solid var(--light-border); border-radius: 8px;
+  padding: clamp(8px, 1vh, 12px); display: flex; flex-direction: column;
+  align-items: center; cursor: pointer; transition: all 0.2s ease;
+  color: var(--text-gray); font-size: clamp(11px, 0.9vw, 13px);
+}
+.role-card.active { border-color: var(--primary-blue); color: var(--primary-blue); background-color: #f8fafc; }
+
+select#regProgram, select#regProgramFaculty {
+  width: 100%;
+  padding: clamp(9px, 1.2vh, 13px) clamp(12px, 1.2vw, 16px);
+  border: 1px solid var(--light-border); border-radius: 8px;
+  font-size: clamp(12px, 1vw, 14px); outline: none;
+  transition: border-color 0.2s; text-align: left;
+  background: #fff; color: #1e293b; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; cursor: pointer;
+}
+select#regProgram:focus, select#regProgramFaculty:focus { border-color: var(--primary-blue); }
+
+#msgBox {
+  display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+  background-color: var(--primary-blue); color: white;
+  padding: clamp(10px, 1.4vh, 16px) clamp(16px, 2vw, 24px);
+  border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  z-index: 1000; font-size: clamp(12px, 1vw, 15px); text-align: center;
+  min-width: 220px; animation: slideDown 0.3s ease-out;
+}
+@keyframes slideDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
+
+/* ── Announcement panel ── */
+.announce-panel {
+  position: fixed; top: 20px; right: 20px; z-index: 500;
+  width: clamp(220px, 20vw, 300px);
+  display: flex; flex-direction: column; pointer-events: auto;
+}
+.announce-toggle {
+  background: var(--primary-blue); color: white; border: none;
+  padding: clamp(8px, 1vh, 11px) clamp(10px, 1vw, 16px);
+  border-radius: 10px; cursor: pointer;
+  font-size: clamp(11px, 0.9vw, 13px); font-weight: 700;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%;
+  transition: border-radius 0.2s;
+}
+.announce-panel.open .announce-toggle { border-radius: 10px 10px 0 0; border-bottom: 2px solid var(--accent-gold); }
+.announce-toggle span { display: flex; align-items: center; gap: 7px; }
+.announce-chevron { transition: transform 0.2s; flex-shrink: 0; }
+.announce-panel.open .announce-chevron { transform: rotate(180deg); }
+.announce-body {
+  background: white; border-radius: 0 0 10px 10px;
+  border: 2px solid var(--accent-gold); border-top: none;
+  max-height: clamp(200px, 30vh, 360px); overflow-y: auto; display: none;
+}
+.announce-panel.open .announce-body { display: block; }
+.announce-section-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+  color: #94a3b8; padding: 8px 12px 4px; border-bottom: 1px solid #f1f5f9;
+  display: flex; align-items: center; gap: 5px;
+}
+.announce-item {
+  padding: clamp(7px, 1vh, 10px) clamp(10px, 1vw, 14px);
+  border-bottom: 1px solid #f1f5f9; display: flex; gap: 8px; align-items: flex-start;
+}
+.announce-item:last-child { border-bottom: none; }
+.announce-dot-event { width: 8px; height: 8px; border-radius: 50%; background: #3b82f6; flex-shrink: 0; margin-top: 4px; }
+.announce-dot-reminder { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-gold); flex-shrink: 0; margin-top: 4px; }
+.announce-msg { font-size: clamp(11px, 0.9vw, 13px); color: #1e293b; line-height: 1.45; font-weight: 500; }
+.announce-date { font-size: clamp(10px, 0.8vw, 11px); color: #64748b; margin-top: 2px; }
+.announce-empty { padding: 12px; font-size: clamp(11px, 0.9vw, 13px); color: #94a3b8; text-align: center; }
+
+/* ── Responsive ── */
+
+/* ── Bible verse card ── */
+.bible-verse {
+  position: fixed; bottom: clamp(14px,2vh,24px); right: clamp(14px,2vw,28px);
+  z-index: 5; pointer-events: none;
+  width: clamp(210px, 18vw, 270px);
+}
+.bible-card {
+  background: rgba(0,20,60,0.88);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: clamp(10px,1.3vh,16px) clamp(12px,1.3vw,18px);
+  border-left: 3px solid #f59e0b;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+}
+.bible-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.bible-header svg { flex-shrink: 0; }
+.bible-header span {
+  font-size: clamp(8px,0.62vw,10px); font-weight: 800;
+  letter-spacing: 1.6px; color: #f59e0b; text-transform: uppercase;
+}
+.bible-text {
+  font-size: clamp(11px,0.88vw,13px); color: rgba(255,255,255,0.95);
+  font-style: italic; line-height: 1.6; margin-bottom: 9px;
+}
+.bible-ref { display: flex; align-items: center; gap: 8px; }
+.bible-line { flex: 1; height: 1px; background: rgba(245,158,11,0.35); }
+.bible-ref span {
+  font-size: clamp(10px,0.78vw,12px); color: #f59e0b;
+  font-weight: 700; letter-spacing: 0.3px; white-space: nowrap;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .login-wrapper { width: clamp(300px, 44vw, 460px); }
+  .bible-verse { width: clamp(190px,16vw,240px); }
+}
+@media (max-width: 900px) {
+  .login-wrapper { width: clamp(300px, 54vw, 400px); }
+  .announce-panel { width: clamp(200px,30vw,260px); }
+  .bible-verse { display: none; }
+}
+@media (max-width: 768px) {
+  body { flex-direction: column; }
+  .login-wrapper { width: 100%; max-width: 100%; min-height: auto; box-shadow: none; }
+  .card-header { padding: clamp(20px,4vw,32px) clamp(14px,4vw,24px) clamp(16px,3vw,24px); }
+  .card-header h1 { font-size: clamp(16px,4vw,22px); }
+  .card-header h2 { font-size: clamp(9px,2vw,12px); }
+  .icon-container { width: clamp(52px,12vw,68px); height: clamp(52px,12vw,68px); }
+  .card-body { padding: clamp(16px,4vw,28px) clamp(14px,5vw,32px); }
+  .input-group label { font-size: clamp(12px,3vw,14px); }
+  .input-group input { font-size: clamp(13px,3vw,15px); padding: clamp(10px,2.5vw,14px) clamp(12px,3vw,16px); }
+  .btn { font-size: clamp(13px,3.5vw,15px); padding: clamp(11px,3vw,14px); }
+  .footer-links { padding: clamp(12px,3vw,18px); }
+  select#regProgram, select#regProgramFaculty { font-size: clamp(12px,3vw,14px); }
+  .announce-panel { position: static; width: 100%; z-index: auto; border-bottom: 2px solid var(--accent-gold); }
+  .announce-toggle { border-radius: 0; font-size: 12px; padding: 9px 14px; }
+  .announce-panel.open .announce-toggle { border-radius: 0; border-bottom: 2px solid var(--accent-gold); }
+  .announce-body { border-radius: 0; border-left: none; border-right: none; border-bottom: none; max-height: 160px; }
+  .bible-verse { display: none; }
+}
+@media (max-width: 420px) {
+  .card-header h1 { font-size: 15px; }
+  .card-header h2 { font-size: 9px; }
+  .card-header { padding: 18px 12px 14px; }
+  .icon-container { width: 48px; height: 48px; }
+  .card-body { padding: 14px; }
+  .input-group { margin-bottom: 12px; }
+  .btn { padding: 11px; font-size: 13px; }
+  .role-card { padding: 7px 3px; font-size: 11px; }
+  .role-selector { gap: 8px; }
+  .footer-links { padding: 10px 12px; }
+  select#regProgram, select#regProgramFaculty { padding: 10px 12px; font-size: 12px; }
+}
+@media (max-width: 320px) {
+  .card-header h1 { font-size: 13px; }
+  .icon-container { width: 42px; height: 42px; }
+  .input-group input { padding: 9px 10px; }
+}
+@media (min-width: 1600px) {
+  .login-wrapper { width: clamp(420px, 28vw, 560px); }
+  .announce-panel { width: 320px; top: 28px; right: 28px; }
+  .bible-verse { width: 290px; }
+}
