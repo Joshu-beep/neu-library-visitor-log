@@ -87,29 +87,29 @@ body::before {
 /* ── Profile card ── */
 .profile-card {
   background: var(--blue);
-  padding: clamp(10px, 1vw, 14px);
+  padding: clamp(14px, 1.4vw, 20px);
   color: white; display: flex; flex-direction: row;
-  align-items: center; gap: clamp(8px, 0.9vw, 12px);
+  align-items: center; gap: clamp(12px, 1.2vw, 16px);
   border-bottom: 3px solid var(--gold);
 }
 .avatar {
-  width: clamp(36px, 3.5vw, 46px); height: clamp(36px, 3.5vw, 46px);
+  width: clamp(52px, 5vw, 68px); height: clamp(52px, 5vw, 68px);
   border-radius: 50%; background: rgba(255,255,255,0.18);
-  border: 2px solid var(--gold); flex-shrink: 0;
+  border: 3px solid var(--gold); flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: clamp(14px, 1.5vw, 18px); font-weight: 700;
+  font-size: clamp(20px, 2.2vw, 28px); font-weight: 700;
   background-size: cover; background-position: center;
 }
 .profile-info { min-width: 0; flex: 1; }
-.profile-greeting { font-size: 10px; opacity: 0.7; margin-bottom: 1px; }
-.profile-name { font-size: clamp(12px, 1.1vw, 14px); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.profile-email { font-size: 10px; opacity: 0.6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 4px; }
-.profile-badge { display: inline-block; background: var(--gold); color: #001f54; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: normal; word-break: break-word; line-height: 1.4; max-width: 100%; }
-.hours-pill { display: inline-block; margin-top: 5px; font-size: 9px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+.profile-greeting { font-size: 11px; opacity: 0.7; margin-bottom: 2px; }
+.profile-name { font-size: clamp(14px, 1.3vw, 17px); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.profile-email { font-size: 11px; opacity: 0.65; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 5px; }
+.profile-badge { display: inline-block; background: var(--gold); color: #001f54; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: normal; word-break: break-word; line-height: 1.4; max-width: 100%; }
+.hours-pill { display: inline-block; margin-top: 5px; font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
 .hours-pill.open   { background: rgba(34,197,94,0.25);  color: #86efac; border: 1px solid rgba(34,197,94,0.35); }
 .hours-pill.closed { background: rgba(239,68,68,0.25);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.35); }
 .hours-pill.soon   { background: rgba(245,158,11,0.25); color: #fcd34d; border: 1px solid rgba(245,158,11,0.35); }
-.visit-count-badge { display: inline-block; font-size: 9px; font-weight: 700; background: rgba(255,255,255,0.18); color: rgba(255,255,255,0.9); padding: 1px 7px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.25); margin-top: 4px; }
+.visit-count-badge { display: inline-block; font-size: 10px; font-weight: 700; background: rgba(255,255,255,0.18); color: rgba(255,255,255,0.9); padding: 2px 9px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.25); margin-top: 5px; }
 
 /* ── Session card ── */
 .session-card { background: rgba(240,253,244,0.97); border: 1.5px solid #bbf7d0; display: none; }
@@ -315,3 +315,38 @@ body::before {
   .nav-clock { font-size: 11px; }
   .navbar { padding: 0 10px; }
 }
+
+/* ── Image crop modal ── */
+.crop-modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+  z-index: 4000; align-items: center; justify-content: center;
+}
+.crop-modal-overlay.show { display: flex; }
+.crop-modal {
+  background: white; border-radius: 16px;
+  padding: 24px; width: 92%; max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  display: flex; flex-direction: column; gap: 14px;
+}
+.crop-modal h3 { font-size: 16px; font-weight: 700; color: var(--blue); }
+.crop-modal p { font-size: 12px; color: var(--muted); }
+.crop-canvas-wrap {
+  position: relative; width: 100%; aspect-ratio: 1;
+  overflow: hidden; border-radius: 12px; background: #0f172a;
+  cursor: grab; user-select: none;
+}
+.crop-canvas-wrap:active { cursor: grabbing; }
+#cropCanvas { display: block; width: 100%; height: 100%; }
+.crop-circle-overlay {
+  position: absolute; inset: 0; pointer-events: none;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+  border-radius: 50%;
+  top: 10%; left: 10%; width: 80%; height: 80%;
+}
+.crop-controls { display: flex; flex-direction: column; gap: 6px; }
+.crop-controls label { font-size: 11px; font-weight: 600; color: var(--muted); }
+.crop-controls input[type=range] { width: 100%; accent-color: var(--blue); }
+.crop-actions { display: flex; gap: 10px; }
+.btn-crop-save { flex: 1; padding: 11px; background: var(--blue); color: white; border: none; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.btn-crop-cancel { flex: 1; padding: 11px; background: #f1f5f9; color: var(--muted); border: none; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; }
