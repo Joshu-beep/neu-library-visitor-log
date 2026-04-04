@@ -98,33 +98,32 @@
           </div>
         </div>
 
-        <!-- RIGHT: chart + currently inside SIDE BY SIDE -->
-        <div class="right-panels">
-          <div class="panel">
-            <div class="panel-header">
-              <h3>Daily Visits — Last 7 Days</h3>
-              <span id="chart-subtitle">Loading...</span>
-            </div>
-            <div class="panel-body">
-              <div class="chart-container"><canvas id="visitChart"></canvas></div>
-            </div>
+        <!-- Chart panel -->
+        <div class="panel chart-panel">
+          <div class="panel-header">
+            <h3>Daily Visits — Last 7 Days</h3>
+            <span id="chart-subtitle">Loading...</span>
           </div>
+          <div class="panel-body">
+            <div class="chart-container"><canvas id="visitChart"></canvas></div>
+          </div>
+        </div>
 
-          <div class="panel">
-            <div class="panel-header">
-              <h3>Currently Inside</h3>
-              <span id="inside-count">0 people</span>
-            </div>
-            <div class="inside-scroll">
-              <table class="inside-table">
-                <thead>
-                  <tr><th>Name</th><th>Program</th><th>Time In</th><th>Action</th></tr>
-                </thead>
-                <tbody id="insideTableBody">
-                  <tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted)">No one inside yet.</td></tr>
-                </tbody>
-              </table>
-            </div>
+        <!-- Currently Inside panel -->
+        <div class="panel inside-panel">
+          <div class="panel-header">
+            <h3>Currently Inside</h3>
+            <span id="inside-count">0 people</span>
+          </div>
+          <div class="inside-scroll">
+            <table class="inside-table">
+              <thead>
+                <tr><th>Name</th><th>Program</th><th>Time In</th><th>Action</th></tr>
+              </thead>
+              <tbody id="insideTableBody">
+                <tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted)">No one inside yet.</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -147,16 +146,60 @@
             Reset DB
           </button>
           <div class="date-filter" id="dateFilterSection">
-            <input type="date" class="date-input" id="dateFrom" onchange="filterByDate()" />
+            <input type="date" class="date-input" id="dateFrom" onchange="applyAllFilters()" />
             <span>to</span>
-            <input type="date" class="date-input" id="dateTo" onchange="filterByDate()" />
+            <input type="date" class="date-input" id="dateTo" onchange="applyAllFilters()" />
           </div>
+
+          <!-- Reason filter (log view) -->
+          <select class="filter-select" id="filterReason" onchange="applyAllFilters()" style="display:none;">
+            <option value="">All Reasons</option>
+            <option>Reading</option>
+            <option>Researching</option>
+            <option>Use of Computer</option>
+            <option>Meeting</option>
+          </select>
+
+          <!-- College filter (both views) -->
+          <select class="filter-select" id="filterCollege" onchange="applyAllFilters()">
+            <option value="">All Colleges</option>
+            <option>College of Accountancy</option>
+            <option>College of Agriculture</option>
+            <option>College of Arts and Science</option>
+            <option>College of Business Administration</option>
+            <option>College of Communication</option>
+            <option>College of Informatics and Computing Studies</option>
+            <option>College of Criminology</option>
+            <option>College of Education</option>
+            <option>College of Engineering and Architecture</option>
+            <option>College of Medical Technology</option>
+            <option>College of Midwifery</option>
+            <option>College of Music</option>
+            <option>College of Nursing</option>
+            <option>College of Physical Therapy</option>
+            <option>College of Respiratory Therapy</option>
+            <option>School of Graduate Studies</option>
+            <option>College of Law</option>
+            <option>College of Medicine</option>
+            <option>Integrated School</option>
+          </select>
+
+          <!-- Role filter (user view) -->
+          <select class="filter-select" id="filterRole" onchange="applyAllFilters()" style="display:none;">
+            <option value="">All Roles</option>
+            <option value="student">Student</option>
+            <option value="faculty">Faculty</option>
+            <option value="admin">Admin</option>
+          </select>
+
+          <button class="btn-action" id="clearFiltersBtn" onclick="clearAllFilters()" style="display:none;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;">✕ Clear</button>
           <div class="search-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <input type="text" id="filterInput" placeholder="Filter by keyword..." onkeyup="runFilter()" />
+            <input type="text" id="filterInput" placeholder="Search..." onkeyup="applyAllFilters()" />
           </div>
+          <button class="btn-action btn-clear-filters" id="clearFiltersBtn" onclick="clearAllFilters()" style="display:none;">✕ Clear</button>
           <button class="btn-action btn-export-csv" onclick="exportCSV()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
