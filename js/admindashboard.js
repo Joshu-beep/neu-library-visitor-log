@@ -770,6 +770,11 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
       window.forceLogoutUser = forceLogoutUser;
 
       // ── Init ──
+      // Show correct filters for the default active tab (Visits Log) on page load
+      document.getElementById('filterReason').style.display  = '';
+      document.getElementById('filterCollege').style.display = '';
+      document.getElementById('filterRole').style.display    = 'none';
+
       autoLogoutMidnight().catch(e => console.warn('autoLogout:', e));
       loadStats().catch(e => console.error('loadStats:', e));
       loadInsideNow().catch(e => console.error('loadInsideNow:', e));
